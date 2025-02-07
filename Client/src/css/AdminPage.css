@@ -1,0 +1,26 @@
+.admin-container {
+  width: 100%;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.button-group button {
+  padding: 10px 15px;
+  cursor: pointer;
+  border: 1px solid #000;
+  background-color: transparent;
+  color: #000;
+  border-radius: 5px;
+}
+
+.button-group button:hover {
+  background-color: #323232;
+  color: #fff;
+}

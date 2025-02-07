@@ -1,0 +1,39 @@
+.users-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  div {
+    flex: 1;
+    height: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid black;
+    h3 {
+      font-weight: 500;
+    }
+  }
+}
+
+.info-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  div {
+    width: 25%;
+    display: flex;
+    height: calc(100vh - 5rem);
+    padding-top: rem;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid black;
+    border-bottom: 0;
+  }
+}
+
+.middleDiv {
+  flex-grow: 1;
+  img {
+    max-width: 90%;
+  }
+}
