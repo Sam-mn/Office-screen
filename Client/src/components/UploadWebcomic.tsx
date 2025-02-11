@@ -8,6 +8,7 @@ const UploadWebcomic = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
+      console.log(file);
       const reader = new FileReader();
 
       reader.onloadend = () => {
@@ -21,6 +22,8 @@ const UploadWebcomic = () => {
   const handleRemoveImage = () => {
     setImage(null);
   };
+
+  const handlePublish = () => {};
 
   return (
     <div className="upload-container">
@@ -38,6 +41,9 @@ const UploadWebcomic = () => {
             <RiDeleteBin5Fill size={20} />
           </button>
           <img src={image} alt="Uploaded" />
+          <button className="publish-button" onClick={handlePublish}>
+            Publish
+          </button>
         </div>
       )}
     </div>

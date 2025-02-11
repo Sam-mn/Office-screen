@@ -1,25 +1,91 @@
+import { useEffect, useState } from "react";
 import "../css/DisplayScreen.css";
+import { IComic, IImportantNote, IUsers } from "../utils";
+import DisplayedUser from "../components/DisplayedUser";
 
 const DisplayScreen = () => {
+  const [users, setUsers] = useState<IUsers[] | null>(null);
+  const [comicDetails, setComicDetails] = useState<IComic | null>(null);
+  const [importantNotes, setImportantNotes] = useState<IImportantNote[] | null>(
+    null
+  );
+
+  useEffect(() => {
+    setUsers([
+      {
+        id: "1",
+        name: "Ammar",
+        UserStatus: "In office",
+        startDate: "2021-09-01",
+        endDate: "2021-09-01",
+      },
+      {
+        id: "2",
+        name: "Daniel",
+        UserStatus: "Away",
+        startDate: "2021-09-01",
+        endDate: "2021-09-01",
+      },
+      {
+        id: "3",
+        name: "Samer",
+        UserStatus: "Busy",
+        startDate: "2021-09-01",
+        endDate: "2021-09-01",
+      },
+    ]);
+
+    setImportantNotes([
+      {
+        id: "1",
+        note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      },
+      {
+        id: "2",
+        note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      },
+      {
+        id: "3",
+        note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      },
+      {
+        id: "4",
+        note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+      },
+    ]);
+
+    setComicDetails({
+      id: 1,
+      filePath: null,
+      url: "https://imgs.xkcd.com/comics/stromatolites.png",
+      text: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusamu quasi placeat nobis. Ducimus.",
+    });
+  }, []);
+
   return (
-    <div>
+    <div className="display-screen">
       <div className="users-container">
-        <div style={{ backgroundColor: "#4caf50" }}>
-          <h3>Ammar - In office</h3>
-        </div>
-        <div style={{ backgroundColor: "#ffeb3b" }}>
-          <h3>Daniel - Away</h3>
-        </div>
-        <div style={{ backgroundColor: "#FF5722" }}>
-          <h3>Samer - Busy</h3>
-        </div>
+        {users?.map((user) => (
+          <DisplayedUser {...user} key={user.id} />
+        ))}
       </div>
       <div className="info-container">
-        <div> important note</div>
-        <div className="middleDiv">
-          <img src="https://imgs.xkcd.com/comics/stromatolites.png" />
+        <div className="importantNotes">
+          <h2>Important Notes</h2>
+          <ul>
+            {importantNotes?.map((note) => (
+              <li key={note.id}>{note.note}</li>
+            ))}
+          </ul>
         </div>
-        <div>Lunch menu</div>
+        <div className="middleDiv">
+          {comicDetails?.url && <img src={comicDetails.url} />}
+          {comicDetails?.filePath && <img src={comicDetails.filePath} />}
+          <p>{comicDetails?.text}</p>
+        </div>
+        <div className="MenuDiv">
+          <h2>Lunch menu</h2>
+        </div>
       </div>
     </div>
   );
