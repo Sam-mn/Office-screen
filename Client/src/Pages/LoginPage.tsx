@@ -1,18 +1,22 @@
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useContext, useState } from "react";
 import "../css/LoginPage.css";
 import login from "../utils/requests";
 import { useNavigate } from "react-router-dom";
+import { OfficeScreenContext } from "../context/OfficeScreenContext";
 
 const LoginPage = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
+  const context = useContext(OfficeScreenContext);
+  const tokens = context.tokens;
+  const setTokens = context.setTokens;
 
   const attemptLogin: FormEventHandler<HTMLFormElement> = async (form) => {
     form.preventDefault();
     try {
-      const token = await login(username, password);
-      navigate("/")
+      setTokens(await login(username, password));
+      navigate("/");
     }
     catch {
       throw new Error("Login failed.");

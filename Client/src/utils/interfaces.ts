@@ -1,6 +1,7 @@
 export interface ITokens {
     accessToken: string;
     refreshToken: string;
+    refreshTokenExpirationTime: Date
 }
 
 export interface IUsers {
@@ -34,4 +35,9 @@ export interface UserRegistrationData {
   lastName: string;
   password: string;
   passwordConfirm: string;
+}
+
+export interface IOfficeScreenContext {
+  tokens: ITokens;
+  setTokens: (tokens: ITokens) => void;
 }
