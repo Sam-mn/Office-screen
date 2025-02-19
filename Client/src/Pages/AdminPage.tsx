@@ -3,6 +3,7 @@ import "../css/AdminPage.css";
 import AddEditStatus from "./AddEditStatus";
 import NotesPage from "./NotesPage";
 import AddWebComicPage from "./AddWebComicPage";
+import UserRegistration from "./UserRegistration";
 
 const AdminPage = () => {
   const [activeComponent, setActiveComponent] = useState<number>(1);
@@ -37,11 +38,21 @@ const AdminPage = () => {
         >
           Important note
         </button>
+        <button
+          onClick={() => setActiveComponent(4)}
+          style={{
+            backgroundColor: activeComponent === 4 ? "#323232" : undefined,
+            color: activeComponent === 4 ? "#fff" : undefined,
+          }}
+        >
+          User registration
+        </button>
       </div>
       <div>
         {activeComponent === 1 && <AddWebComicPage />}
         {activeComponent === 2 && <AddEditStatus />}
         {activeComponent === 3 && <NotesPage />}
+        {activeComponent === 4 && <UserRegistration />}
       </div>
     </div>
   );

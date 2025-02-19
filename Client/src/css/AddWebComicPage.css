@@ -19,15 +19,22 @@
   border-radius: 5px;
 }
 
+.webcomic-button-group button:hover {
+  background-color: #323232;
+}
+
 .prev-webcomic {
   width: 25%;
   padding-top: 3rem;
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
   border-right: 1px solid #000;
   height: 85vh;
+  h2 {
+    margin-bottom: 3rem;
+  }
+
   img {
     max-width: 90%;
     margin-bottom: 1rem;
