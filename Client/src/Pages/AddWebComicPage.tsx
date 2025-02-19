@@ -52,7 +52,10 @@ const AddWebComicPage = () => {
         <div className="prev-webcomic">
           <h2>Previous webcomic</h2>
           <img src="https://imgs.xkcd.com/comics/stromatolites.png" />
-          <p>text</p>
+          <p>
+            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+            Repellendus officia a nesciunt magni expedita quas nostrum.{" "}
+          </p>
         </div>
         {activeComponent === 1 && <ShowRandomWebComic />}
         {activeComponent === 2 && <UploadWebcomic />}

@@ -57,7 +57,7 @@ const DisplayScreen = () => {
     setComicDetails({
       id: 1,
       filePath: null,
-      url: "https://imgs.xkcd.com/comics/stromatolites.png",
+      url: "https://localhost:7078/static/images/suspension_bridge.png",
       text: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusamu quasi placeat nobis. Ducimus.",
     });
   }, []);
