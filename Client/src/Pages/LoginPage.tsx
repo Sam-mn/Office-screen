@@ -1,6 +1,6 @@
 import { FormEventHandler, useState } from "react";
 import "../css/LoginPage.css";
-import login from "../utils/requests";
+import { login } from "../utils/requests";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
@@ -12,12 +12,11 @@ const LoginPage = () => {
     form.preventDefault();
     try {
       const token = await login(username, password);
-      navigate("/")
-    }
-    catch {
+      navigate("/");
+    } catch {
       throw new Error("Login failed.");
     }
-  }
+  };
 
   return (
     <div className="login-container">

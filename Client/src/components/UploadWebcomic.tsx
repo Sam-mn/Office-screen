@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "../css/UploadWebcomic.css";
 import { RiDeleteBin5Fill } from "react-icons/ri";
-import axios from "axios";
 import Popup from "../components/Popup";
+import { handlePublishImage } from "../utils/requests";
 
 const UploadWebcomic = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -37,31 +37,25 @@ const UploadWebcomic = () => {
     setImage(null);
   };
 
-  const handlePublish = async () => {
-    if (!file) {
-      alert("Please select a file first.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("source", selectedDirectory);
-    formData.append("text", imageText);
-    console.log(imageText);
-    console.log(selectedDirectory);
+  const handleAddComic = async () => {
     try {
-      const response = await axios.post(
-        "https://localhost:7078/api/Image/upload",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+      if (!selectedDirectory) {
+        alert("Please select a directory first.");
+        return;
+      }
+      if (!imageText) {
+        alert("Please add text first.");
+        return;
+      }
+
+      const response = await handlePublishImage(
+        file,
+        selectedDirectory,
+        imageText
       );
-      console.log(response);
+      if (response?.status === 200) alert("Image uploaded successfully");
     } catch {
-      alert("Error uploading file.");
+      throw new Error("Login failed.");
     }
   };
 
@@ -118,7 +112,7 @@ const UploadWebcomic = () => {
             <RiDeleteBin5Fill size={20} />
           </button>
           <img src={image} alt="Uploaded" />
-          <button className="publish-button" onClick={handlePublish}>
+          <button className="publish-button" onClick={handleAddComic}>
             Publish
           </button>
         </div>
