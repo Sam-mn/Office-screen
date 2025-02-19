@@ -1,3 +1,8 @@
+export interface ITokens {
+    accessToken: string;
+    refreshToken: string;
+}
+
 export interface IUsers {
   id: string;
   name: string;
