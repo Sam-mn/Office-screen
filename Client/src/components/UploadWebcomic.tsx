@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../css/UploadWebcomic.css";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import Popup from "../components/Popup";
-import { handlePublishImage } from "../utils/requests";
+import {
+  handlePublishImage,
+  getFoldersReq,
+  addFolderReq,
+} from "../utils/requests";
+import { IFolder } from "../utils";
 
 const UploadWebcomic = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -10,9 +15,20 @@ const UploadWebcomic = () => {
   const [selectedDirectory, setSelectedDirectory] = useState("");
   const [imageText, setImageText] = useState("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [folders, setFolders] = useState<IFolder[]>([]);
+  const [newFolder, setNewFolder] = useState("");
 
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
+
+  const getFolders = async () => {
+    const foldersData = await getFoldersReq();
+    setFolders(foldersData);
+  };
+
+  useEffect(() => {
+    getFolders();
+  }, []);
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDirectory(event.target.value);
@@ -59,13 +75,29 @@ const UploadWebcomic = () => {
     }
   };
 
+  const handleAddDirectory = async () => {
+    if (!newFolder) return;
+
+    const folderResponse = await addFolderReq(newFolder);
+    if (folderResponse.status === 201) {
+      getFolders();
+      closePopup();
+    }
+  };
+
   return (
     <div className="upload-container">
       <Popup isOpen={isPopupOpen}>
         <h2>Add a new directory</h2>
-        <input type="text" placeholder="Write a name" name="psw" required />
+        <input
+          type="text"
+          placeholder="Write a name"
+          name="directory"
+          onChange={(e) => setNewFolder(e.target.value)}
+          required
+        />
         <div className="popup-buttons">
-          <button onClick={closePopup} className="add-button">
+          <button onClick={handleAddDirectory} className="add-button">
             Add
           </button>
           <button onClick={closePopup} className="close-button">
@@ -84,8 +116,11 @@ const UploadWebcomic = () => {
           <option value="" disabled>
             select a directory
           </option>
-          <option value="XKCD">XKCD</option>
-          <option value="2024">2024</option>
+          {folders.map((folder) => (
+            <option key={folder.id} value={folder.folderName}>
+              {folder.folderName}
+            </option>
+          ))}
         </select>
         <button className="add-directory-btn" onClick={openPopup}>
           Add Directory

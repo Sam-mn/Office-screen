@@ -1,6 +1,6 @@
 export interface ITokens {
-    accessToken: string;
-    refreshToken: string;
+  accessToken: string;
+  refreshToken: string;
 }
 
 export interface IUsers {
@@ -34,4 +34,9 @@ export interface UserRegistrationData {
   lastName: string;
   password: string;
   passwordConfirm: string;
+}
+
+export interface IFolder {
+  id: number;
+  folderName: string;
 }

@@ -1,4 +1,4 @@
-import { BASE_URL, ITokens } from ".";
+import { BASE_URL, ITokens, IFolder } from ".";
 import axios from "axios";
 
 export async function login(
@@ -52,5 +52,36 @@ export const handlePublishImage = async (
     return response;
   } catch {
     alert("Error uploading file.");
+  }
+};
+
+export const getFoldersReq = async (): Promise<IFolder[]> => {
+  try {
+    const response = await axios.get<IFolder[]>(`${BASE_URL}/folders`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching folders:", error);
+    throw error;
+  }
+};
+
+export const addFolderReq = async (
+  folderName: string
+): Promise<{ data: IFolder; status: number }> => {
+  try {
+    console.log(folderName);
+    const response = await axios.post(
+      `${BASE_URL}/folders`,
+      { folderName },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return { data: response.data, status: response.status };
+  } catch (error) {
+    console.error("Error adding folder:", error);
+    throw error;
   }
 };
