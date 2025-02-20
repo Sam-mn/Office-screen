@@ -1,4 +1,4 @@
-import { FormEventHandler, useContext, useState } from "react";
+import { FormEventHandler, useContext, useEffect, useState } from "react";
 import "../css/LoginPage.css";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
 import { login } from "../utils";
@@ -8,19 +8,31 @@ const LoginPage = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loginFailed, setLoginFailed] = useState<boolean>(false);
+  const [forward, setForward] = useState<boolean>(false);
   const navigate = useNavigate();
   const context = useContext(OfficeScreenContext);
   const setTokens = context.setTokens;
 
+  useEffect(() => {
+    context.clearTokens()
+  }, []);
+
+  useEffect(() =>{
+    if (forward) {
+      navigate(context.getForwardPage());
+    }
+  }, [context.tokens]);
+
   const attemptLogin: FormEventHandler<HTMLFormElement> = async (form) => {
     form.preventDefault();
     try {
-      context.clearTokens();
       setTokens(await login(username, password));
+      setForward(true);
       setLoginFailed(false);
-      navigate(context.getForwardPage());
+      
     }
     catch {
+      setForward(false);
       setLoginFailed(true);
     }
   }
