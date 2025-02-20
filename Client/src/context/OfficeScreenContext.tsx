@@ -2,7 +2,6 @@ import { createContext, ReactElement, ReactNode } from "react";
 import { DEFAULT_TOKENS, IOfficeScreenContext, ITokenObjectExtensions, ITokens } from "../utils";
 import { useLocalStorage } from 'usehooks-ts';
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
 
 export const OfficeScreenContext = createContext<IOfficeScreenContext>({} as IOfficeScreenContext);
 
