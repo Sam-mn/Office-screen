@@ -1,22 +1,24 @@
 import { FormEventHandler, useContext, useState } from "react";
 import "../css/LoginPage.css";
-import { useNavigate } from "react-router-dom";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
 import { login } from "../utils";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loginFailed, setLoginFailed] = useState<boolean>(false);
+  const navigate = useNavigate();
   const context = useContext(OfficeScreenContext);
   const setTokens = context.setTokens;
 
   const attemptLogin: FormEventHandler<HTMLFormElement> = async (form) => {
     form.preventDefault();
     try {
+      context.clearTokens();
       setTokens(await login(username, password));
       setLoginFailed(false);
-      context.forwardUser();
+      navigate(context.getForwardPage());
     }
     catch {
       setLoginFailed(true);
@@ -54,9 +56,9 @@ const LoginPage = () => {
             Login
           </button>
 
-          {loginFailed && FieldMessage("Login failed")}
         </div>
       </form>
+      {loginFailed && FieldMessage("Login failed")}
     </div>
   );
 };

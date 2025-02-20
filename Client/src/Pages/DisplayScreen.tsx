@@ -10,8 +10,6 @@ const DisplayScreen = () => {
     null
   );
 
-  authTest();
-
   useEffect(() => {
     setUsers([
       {
