@@ -14,6 +14,31 @@
   border-radius: 0.5rem;
 }
 
+.directory-container {
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.directory-container button {
+  padding: 10px 15px;
+  border-radius: 0.25rem;
+  background-color: #343434;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin: 0;
+}
+.directory-container select {
+  padding: 7px 15px;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  margin: 0;
+  font-size: 1rem;
+}
+
 .upload-container .upload-Img-input {
   padding: 10px 15px;
   cursor: pointer;

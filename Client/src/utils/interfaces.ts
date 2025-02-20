@@ -49,3 +49,7 @@ export interface IOfficeScreenContext {
 export interface ITokenObjectExtensions extends JwtPayload {
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
 }
+export interface IFolder {
+  id: number;
+  folderName: string;
+}

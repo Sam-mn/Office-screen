@@ -35,7 +35,7 @@ const LoginPage = () => {
       setForward(false);
       setLoginFailed(true);
     }
-  }
+  };
 
   return (
     <div className="login-container">
