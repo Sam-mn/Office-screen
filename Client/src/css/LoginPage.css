@@ -39,6 +39,12 @@
     width: 100%;
   }
 
+  .login-field-message {
+    color: red;
+    display: flex;
+    justify-content: center;
+  }
+
   button:hover {
     opacity: 0.8;
   }

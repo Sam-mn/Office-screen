@@ -7,6 +7,7 @@ import { OfficeScreenContext } from "../context/OfficeScreenContext";
 const LoginPage = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [loginFailed, setLoginFailed] = useState<boolean>(false);
   const navigate = useNavigate();
   const context = useContext(OfficeScreenContext);
   const tokens = context.tokens;
@@ -16,10 +17,11 @@ const LoginPage = () => {
     form.preventDefault();
     try {
       setTokens(await login(username, password));
+      setLoginFailed(false);
       navigate("/");
     }
     catch {
-      throw new Error("Login failed.");
+      setLoginFailed(true);
     }
   }
 
@@ -49,6 +51,9 @@ const LoginPage = () => {
             onChange={(pw) => setPassword(pw.target.value)}
             required
           />
+
+          {loginFailed && FieldMessage("Login failed")}
+
           <button type="submit" className="login-button ">
             Login
           </button>
@@ -57,5 +62,15 @@ const LoginPage = () => {
     </div>
   );
 };
+
+const FieldMessage = (message: string) => {
+  return (
+    <div className="login-field-message">
+      <p>
+        {message}
+      </p>
+    </div>
+  )
+} 
 
 export default LoginPage;
