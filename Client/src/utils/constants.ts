@@ -7,3 +7,6 @@ export const DEFAULT_TOKENS: ITokens = {
     refreshToken: "",
     refreshTokenExpirationTime: new Date()
 }
+
+export const FETCH_ERROR_ACCESS: string = "Unauthorized.";
+export const FETCH_ERROR_DATA: string = "No data or unable to parse.";

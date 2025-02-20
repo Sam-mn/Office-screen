@@ -40,4 +40,6 @@ export interface UserRegistrationData {
 export interface IOfficeScreenContext {
   tokens: ITokens;
   setTokens: (tokens: ITokens) => void;
+  clearTokens: () => void;
+  forwardUser: () => void;
 }

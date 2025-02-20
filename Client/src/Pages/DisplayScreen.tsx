@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "../css/DisplayScreen.css";
-import { IComic, IImportantNote, IUsers } from "../utils";
+import { authTest, IComic, IImportantNote, IUsers } from "../utils";
 import DisplayedUser from "../components/DisplayedUser";
 
 const DisplayScreen = () => {
@@ -9,6 +9,8 @@ const DisplayScreen = () => {
   const [importantNotes, setImportantNotes] = useState<IImportantNote[] | null>(
     null
   );
+
+  authTest();
 
   useEffect(() => {
     setUsers([
