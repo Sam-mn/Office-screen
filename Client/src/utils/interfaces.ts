@@ -6,6 +6,12 @@ export interface ITokens {
     refreshTokenExpirationTime: Date
 }
 
+export interface IFetch<T> {
+  succeeded: boolean;
+  error?: string;
+  value?: T;
+}
+
 export interface IUsers {
   id: string;
   name: string;
@@ -49,7 +55,12 @@ export interface IOfficeScreenContext {
 export interface ITokenObjectExtensions extends JwtPayload {
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
 }
+
 export interface IFolder {
   id: number;
   folderName: string;
+}
+
+export interface IDefaultStatuses {
+  defaultStatus: string[];
 }

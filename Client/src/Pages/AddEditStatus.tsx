@@ -1,24 +1,38 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "../css/StatusPage.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { fetchDefaultStatuses } from "../utils";
+import { OfficeScreenContext } from "../context/OfficeScreenContext";
 
 const AddEditStatus = () => {
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
+  const [defaultStatuses, setDefaultStatuses] = useState<string[]>([]);
+  const context = useContext(OfficeScreenContext);
+
+  useEffect(() => {
+    fetchDefaultStatuses(context.tokens, context.setTokens).then((s) => {
+      setDefaultStatuses(s)
+    })
+  }, []);
+
+  
+
   return (
     <div className="status-container">
       <h1>Status</h1>
       <form>
         <label htmlFor="uname">
-          <b>Chose Status</b>
+          <b>Select a status</b>
         </label>
-        <select id="status" name="status">
-          <option disabled selected>
-            select a status
+        <select id="status" name="status" defaultValue={'Select a status'}>
+          <option disabled>
+            Select a status
           </option>
-          <option value="In office">In office</option>
-          <option value="Away">Away</option>
+          {defaultStatuses.map(st => {
+            return <option key={st} value={st}>{st}</option>
+          })}
         </select>
 
         <label htmlFor="psw">

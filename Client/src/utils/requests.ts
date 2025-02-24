@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { BASE_URL, FETCH_ERROR_ACCESS, FETCH_ERROR_DATA, ITokens, IFolder } from ".";
+import { BASE_URL, FETCH_ERROR_ACCESS, FETCH_ERROR_DATA, ITokens, IFolder, IDefaultStatuses, IFetch } from ".";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -87,12 +87,15 @@ export async function login(username: string, password: string): Promise<ITokens
   return (await response.json()) as ITokens;
 }
 
-export async function authTest(): Promise<void> {
-  const url = `${BASE_URL}/auth/test-authorization`;
+export async function authTest(tokens: ITokens, setTokens: (tokens: ITokens) => void): Promise<void> {
+  const params: IFetchWithTokenParams = {
+    url: `${BASE_URL}/auth/test-authorization`,
+    options: {method: "Get"},
+    tokens: tokens,
+    setTokens: setTokens
+  }
 
-  const response: IFetch<string> = await fetchWithToken<string>(url, {
-    method: "GET"
-  });
+  const response: IFetch<string> = await fetchWithToken<string>(params);
 
   if (response.succeeded === false && response.error !== FETCH_ERROR_DATA) {
     throw new Error("User not authenticated or authorized.");
@@ -102,22 +105,35 @@ export async function authTest(): Promise<void> {
   }
 }
 
-/// Fetch functions ///
+export async function fetchDefaultStatuses(tokens: ITokens, setTokens: (tokens: ITokens) => void): Promise<string[]> {
+  const params: IFetchWithTokenParams = {
+    url: `${BASE_URL}/status/default`,
+    options: {method: "Get"},
+    tokens: tokens,
+    setTokens: setTokens
+  }
 
-interface IFetch<T> {
-  succeeded: boolean;
-  error?: string;
-  value?: T;
+  const response: IFetch<IDefaultStatuses> = await fetchWithToken<IDefaultStatuses>(params);
+
+  if (response.succeeded === false) {
+    throw new Error("Fetching default statuses failed.");
+  }
+
+  return response.value!.defaultStatus;
 }
 
-export async function fetchWithToken<T>(
+/// Fetch with token ///
+
+interface IFetchWithTokenParams {
   url: RequestInfo | URL,
-  options?: RequestInit
-): Promise<IFetch<T>> {
-  
-  const context = useContext(OfficeScreenContext);
-  const tokens = context.tokens;
-  const setTokens = context.setTokens;
+  options?: RequestInit,
+  tokens: ITokens,
+  setTokens: (tokens: ITokens) => void
+}
+
+export async function fetchWithToken<T>(params: IFetchWithTokenParams): Promise<IFetch<T>> {
+  const tokens = params.tokens;
+  const setTokens = params.setTokens;
 
   // Check and refresh token
   const tokenIsExpired: boolean = checkTokenExpiration(tokens!.accessToken);
@@ -129,22 +145,19 @@ export async function fetchWithToken<T>(
   // Perform fetch
   const requestInit: RequestInit = createRequestInit(
     tokens.accessToken,
-    options
+    params.options
   );
 
   // Fetch data
-  const response: Response = await fetch(url, requestInit);
+  const response: Response = await fetch(params.url, requestInit);
 
   // Return data
   if (response.ok === true) {
-    let jsonValue: any;
-    let returnValue: T;
     try {
-      jsonValue = await response.json();
-      returnValue = jsonValue as T;
+      const value = await response.json() as T;
       return {
         succeeded: true,
-        value: returnValue
+        value: value
       };
     } catch {
       return {
@@ -153,7 +166,6 @@ export async function fetchWithToken<T>(
       };
     }
   }
-
   return {
     succeeded: false,
     error: FETCH_ERROR_ACCESS
@@ -166,7 +178,7 @@ export async function refreshTokens({
 }: ITokens): Promise<ITokens> {
   console.log("Refreshing token.")
 
-  const url: string = `${BASE_URL}/api/auth/refresh`;
+  const url: string = `${BASE_URL}/auth/refresh`;
 
   const response: Response = await fetch(url, {
     method: 'POST',
