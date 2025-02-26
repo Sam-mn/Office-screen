@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import "../css/UserRegistration.css";
-import { UserRegistrationData } from "../utils";
+import { addNewUser, UserRegistrationData } from "../utils";
 
 const UserRegistration = () => {
   const [userData, setUserData] = useState<UserRegistrationData>({
@@ -8,19 +9,54 @@ const UserRegistration = () => {
     firstName: "",
     lastName: "",
     password: "",
-    passwordConfirm: "",
+    admin: false,
   });
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [userCreated, setUserCreated] = useState<boolean>(false);
 
+  const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserData({
-      ...userData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value, type, checked } = e.target;
+
+    setUserData((prevData) => ({
+      ...prevData,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleConfirmPasswordOnChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setConfirmPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(userData);
+    try {
+      if (userData.password !== confirmPassword) {
+        alert("Passwords do not match");
+        return;
+      }
+
+      const response = await addNewUser(userData);
+
+      console.log(response.data);
+
+      if (response.data.status === 201) {
+        setUserCreated(true);
+        setErrorMessage("");
+        setError(false);
+      } else {
+        setUserCreated(false);
+      }
+    } catch (error: any) {
+      setUserCreated(false);
+
+      setErrorMessage(`Error adding user: ${error.response.data[0].code}`);
+      setError(true);
+      throw error;
+    }
   };
 
   return (
@@ -78,12 +114,27 @@ const UserRegistration = () => {
             type="password"
             placeholder="Confirm your Password"
             name="passwordConfirm"
-            onChange={handleOnChange}
+            onChange={handleConfirmPasswordOnChange}
             required
           />
+          <div className="checkbox-container">
+            <input
+              type="checkbox"
+              name="admin"
+              checked={userData.admin}
+              onChange={handleOnChange}
+            />
+            <label htmlFor="admin">
+              <b>Admin</b>
+            </label>
+          </div>
           <button type="submit" className="RegisterUser-button ">
             Register
           </button>
+          {userCreated && (
+            <p className="succesMessage">user created successfully</p>
+          )}
+          {error && <p className="errorMessage">{errorMessage}</p>}
         </div>
       </form>
     </div>

@@ -25,6 +25,7 @@
     display: inline-block;
     border: 1px solid #ccc;
     font-size: 1rem;
+    border-radius: 4px;
   }
 
   .RegisterUser-button {
@@ -39,4 +40,35 @@
   button:hover {
     opacity: 0.8;
   }
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  margin: 1rem 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-container label {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.errorMessage {
+  color: red;
+  font-size: 1rem;
+  margin: 1rem 0;
+}
+
+.succesMessage {
+  color: green;
+  font-size: 1rem;
+  margin: 1rem 0;
 }

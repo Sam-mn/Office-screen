@@ -18,7 +18,7 @@ const AdminPage = () => {
             color: activeComponent === 1 ? "#fff" : undefined,
           }}
         >
-          Web comic
+          Comics
         </button>
         <button
           onClick={() => setActiveComponent(2)}
@@ -36,7 +36,7 @@ const AdminPage = () => {
             color: activeComponent === 3 ? "#fff" : undefined,
           }}
         >
-          Important note
+          Important notes
         </button>
         <button
           onClick={() => setActiveComponent(4)}

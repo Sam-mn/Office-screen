@@ -4,9 +4,15 @@ import ShowRandomWebComic from "../components/ShowRandomWebComic";
 import UploadWebcomic from "../components/UploadWebcomic";
 import ShowLastWebComic from "../components/ShowLastWebComic";
 import AddWebComicByUrl from "../components/AddWebComicByUrl";
+import { useLocalStorage } from "usehooks-ts";
+import { IComicLocalStorage } from "../utils";
 
 const AddWebComicPage = () => {
   const [activeComponent, setActiveComponent] = useState<number>(1);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [comicData, setComicData, clearComicData] =
+    useLocalStorage<IComicLocalStorage | null>("ComicData", null);
 
   return (
     <div className="webcomic-container">
@@ -51,11 +57,12 @@ const AddWebComicPage = () => {
       <div className="webcomic-content">
         <div className="prev-webcomic">
           <h2>Previous webcomic</h2>
-          <img src="https://imgs.xkcd.com/comics/stromatolites.png" />
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Repellendus officia a nesciunt magni expedita quas nostrum.{" "}
-          </p>
+          {comicData?.url && (
+            <>
+              <img src={comicData?.url} />
+              <p>{comicData.text}</p>
+            </>
+          )}
         </div>
         {activeComponent === 1 && <ShowRandomWebComic />}
         {activeComponent === 2 && <UploadWebcomic />}
