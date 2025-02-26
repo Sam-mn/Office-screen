@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { BASE_URL, FETCH_ERROR_ACCESS, FETCH_ERROR_DATA, ITokens, IFolder } from ".";
+import { BASE_URL, FETCH_ERROR_ACCESS, FETCH_ERROR_DATA, ITokens, IFolder, IImportantNote } from ".";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -209,3 +209,13 @@ const createRequestInit = (accessToken: string, options?: RequestInit): RequestI
 
   return requestObject;
 }
+
+export const getImportantNotesReq = async (): Promise<IImportantNote[]> => {
+  try {
+    const response = await axios.get<IImportantNote[]>(`${BASE_URL}/importantNotes`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching important notes:", error);
+    throw error;
+  }
+};
