@@ -5,9 +5,7 @@ import {
   FETCH_ERROR_DATA,
   ITokens,
   IFolder,
-  IComic,
   IImportantNote,
-  UserRegistrationData,
 } from ".";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
 import { jwtDecode } from "jwt-decode";
@@ -345,4 +343,16 @@ export const addNewUser = async (userData: UserRegistrationData) => {
     },
   });
   return { data: response };
+};
+
+export const getImportantNotesReq = async (): Promise<IImportantNote[]> => {
+  try {
+    const response = await axios.get<IImportantNote[]>(
+      `${BASE_URL}/importantNotes`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching important notes:", error);
+    throw error;
+  }
 };
