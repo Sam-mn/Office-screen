@@ -50,6 +50,7 @@ export interface IOfficeScreenContext {
   setTokens: (tokens: ITokens) => void;
   clearTokens: () => void;
   getForwardPage: () => string;
+  fetchDefaultStatuses: () => Promise<string[]>;
 }
 
 export interface ITokenObjectExtensions extends JwtPayload {
@@ -63,4 +64,14 @@ export interface IFolder {
 
 export interface IDefaultStatuses {
   defaultStatus: string[];
+}
+
+export interface IFetchParams {
+  url: RequestInfo | URL,
+  options?: RequestInit
+}
+
+export interface ITokenRefresh {
+  newTokens: ITokens,
+  expired: boolean
 }

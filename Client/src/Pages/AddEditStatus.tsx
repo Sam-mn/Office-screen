@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import "../css/StatusPage.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { fetchDefaultStatuses } from "../utils";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
 
 const AddEditStatus = () => {
@@ -12,12 +11,11 @@ const AddEditStatus = () => {
   const context = useContext(OfficeScreenContext);
 
   useEffect(() => {
-    fetchDefaultStatuses(context.tokens, context.setTokens).then((s) => {
+    console.log("Fetching default statuses.")
+    context.fetchDefaultStatuses().then((s) => {
       setDefaultStatuses(s)
     })
   }, []);
-
-  
 
   return (
     <div className="status-container">
