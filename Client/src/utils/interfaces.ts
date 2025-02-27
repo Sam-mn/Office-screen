@@ -20,6 +20,13 @@ export interface IUsers {
   endDate: string;
 }
 
+export interface IFetchedUser {
+  name: string;
+  UserStatus: string;
+  startDate: string;
+  endDate: string;
+}
+
 export interface IImportantNote {
   id: string;
   note: string;
@@ -52,6 +59,7 @@ export interface IOfficeScreenContext {
   getForwardPage: () => string;
   fetchDefaultStatuses: () => Promise<string[]>;
   sendStatusUpdate: (statusUpdate: IStatusUpdate) => void;
+  fetchUsers: () => Promise<IFetchedUser[]>;
 }
 
 export interface ITokenObjectExtensions extends JwtPayload {
@@ -78,7 +86,7 @@ export interface ITokenRefresh {
 }
 
 export interface IStatusUpdate {
-  status: string,
-  startTime: string,
-  endTime: string
+  Status: string,
+  StartTime: string,
+  EndTime: string
 }

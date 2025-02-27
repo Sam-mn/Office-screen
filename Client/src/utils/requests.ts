@@ -89,6 +89,10 @@ export async function fetchWithToken<T>(params: IFetchParams, accessToken: strin
     accessToken,
     params.options
   );
+
+console.log("Debugging: " + requestInit.method)
+console.log("Debugging: " + requestInit.body)
+
   // Fetch data
   const response: Response = await fetch(params.url, requestInit);
   // Check and return data

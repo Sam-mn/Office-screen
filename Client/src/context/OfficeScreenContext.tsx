@@ -1,5 +1,5 @@
-import { createContext, ReactElement, ReactNode, useState } from "react";
-import { BASE_URL, DEFAULT_TOKENS, fetchWithToken, IDefaultStatuses, IFetch, IFetchParams, IOfficeScreenContext, IStatusUpdate, ITokenObjectExtensions, ITokens, refreshTokens } from "../utils";
+import { createContext, ReactElement, ReactNode } from "react";
+import { BASE_URL, DEFAULT_TOKENS, fetchWithToken, IDefaultStatuses, IFetch, IFetchedUser, IFetchParams, IOfficeScreenContext, IStatusUpdate, ITokenObjectExtensions, ITokens, IUsers, refreshTokens } from "../utils";
 import { useLocalStorage } from 'usehooks-ts';
 import { jwtDecode } from "jwt-decode";
 
@@ -30,6 +30,7 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
             console.log("Refreshing token, old refreshToken: " + tokens.refreshToken);
             const refreshedTokens = await refreshTokens(tokens!);
             if (refreshedTokens.expired) {
+                console.log("Refresh token expired, clearing tokens.")
                 clearTokens();
                 return false;
             }
@@ -55,10 +56,29 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
 
     function sendStatusUpdate(statusUpdate: IStatusUpdate): void {
         const params: IFetchParams = {
-            url: `${BASE_URL}/status/set?newStatus=` + status,
-            options: {method: "Post"}
+            url: `${BASE_URL}/status/set`,
+            options: {
+                method: "Post",
+                headers: {
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify(statusUpdate),
+            }
         }
+        console.log("New status: " + statusUpdate.Status)
         fetchWithContext(params);
+    }
+
+    async function fetchUsers(): Promise<IFetchedUser[]> {
+        const params: IFetchParams = {
+            url: `${BASE_URL}/status/all`,
+            options: {method: "Get"}
+          }
+          const response: IFetch<IFetchedUser[]> = await fetchWithContext<IFetchedUser[]>(params);
+          if (response.succeeded === false) {
+            throw new Error("Fetching default statuses failed.");
+          }
+          return response.value!;
     }
 
     const context: IOfficeScreenContext = {
@@ -67,7 +87,8 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
         clearTokens,
         getForwardPage,
         fetchDefaultStatuses,
-        sendStatusUpdate
+        sendStatusUpdate,
+        fetchUsers
     };
 
     return (

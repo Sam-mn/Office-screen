@@ -53,3 +53,9 @@ button {
 button:hover {
   opacity: 0.8;
 }
+
+button:disabled {
+  background-color: #96aab5;
+  opacity: 1;
+  cursor: default;
+}

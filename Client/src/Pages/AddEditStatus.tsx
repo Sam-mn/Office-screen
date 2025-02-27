@@ -55,11 +55,12 @@ const AddEditStatus = () => {
         endTime = "";
       }
       const s: IStatusUpdate = {
-        status: message,
-        startTime: startTime,
-        endTime: endTime
+        Status: message,
+        StartTime: startTime,
+        EndTime: endTime
       }
-      console.log("New status: " + message + " New start time: " + startTime + " New end time: " + endTime)
+      console.log("New status: " + message + " New start time: " + startTime + " New end time: " + endTime);
+      context.sendStatusUpdate(s);
     };
 
   return (
