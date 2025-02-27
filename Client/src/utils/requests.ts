@@ -1,4 +1,4 @@
-import { BASE_URL, FETCH_ERROR_ACCESS, FETCH_ERROR_DATA, ITokens, IFolder, IFetch, IFetchParams, ITokenRefresh, DEFAULT_TOKENS } from ".";
+import { BASE_URL, FETCH_ERROR_ACCESS, FETCH_ERROR_DATA, ITokens, IFolder, IImportantNote, IFetch, IFetchParams, ITokenRefresh, DEFAULT_TOKENS } from ".";
 import axios from "axios";
 
 export const handlePublishImage = async (
@@ -152,3 +152,13 @@ const createRequestInit = (accessToken: string, options?: RequestInit): RequestI
   }
   return requestObject;
 }
+
+export const getImportantNotesReq = async (): Promise<IImportantNote[]> => {
+  try {
+    const response = await axios.get<IImportantNote[]>(`${BASE_URL}/importantNotes`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching important notes:", error);
+    throw error;
+  }
+};
