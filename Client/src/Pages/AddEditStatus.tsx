@@ -11,10 +11,12 @@ const AddEditStatus = () => {
   const context = useContext(OfficeScreenContext);
 
   useEffect(() => {
-    console.log("Fetching default statuses.")
-    context.fetchDefaultStatuses().then((s) => {
-      setDefaultStatuses(s)
-    })
+    if (defaultStatuses.length < 1)
+    {
+      context.fetchDefaultStatuses().then((s) => {
+        setDefaultStatuses(s)
+      })
+    }
   }, []);
 
   return (
