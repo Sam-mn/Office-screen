@@ -1,13 +1,17 @@
-import { useContext, useEffect, useState } from "react";
+import { ChangeEventHandler, FormEventHandler, useContext, useEffect, useState } from "react";
 import "../css/StatusPage.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
+import { IStatusUpdate } from "../utils";
 
 const AddEditStatus = () => {
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
   const [defaultStatuses, setDefaultStatuses] = useState<string[]>([]);
+  const [statusMessage, setStatusMessage] = useState<string>("");
+  const [selectMessage, setSelectMessage] = useState<string>("");
+  const [validSubmit, setValidSubmit] = useState<boolean>(false);
   const context = useContext(OfficeScreenContext);
 
   useEffect(() => {
@@ -19,14 +23,53 @@ const AddEditStatus = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (statusMessage !== "" || selectMessage !== "") {
+      setValidSubmit(true);
+    }
+    else {
+      setValidSubmit(false);
+    }
+  }, [statusMessage, selectMessage]);
+
+  const updateStatusText: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setStatusMessage(e.target.value);
+  }
+
+  const updateStatusSelect: ChangeEventHandler<HTMLSelectElement> = (e) => {
+    setSelectMessage(e.target.value);
+  }
+
+  const submitStatus: FormEventHandler<HTMLFormElement> = async (form) => {
+      form.preventDefault();
+      let message = statusMessage;
+      if (message === "") {
+        message = selectMessage;
+      }
+      let startTime = selectedStartDate?.toDateString();
+      if (startTime === undefined) {
+        startTime = "";
+      }
+      let endTime = selectedEndDate?.toDateString();
+      if (endTime === undefined) {
+        endTime = "";
+      }
+      const s: IStatusUpdate = {
+        status: message,
+        startTime: startTime,
+        endTime: endTime
+      }
+      console.log("New status: " + message + " New start time: " + startTime + " New end time: " + endTime)
+    };
+
   return (
     <div className="status-container">
       <h1>Status</h1>
-      <form>
+      <form onSubmit={submitStatus}>
         <label htmlFor="uname">
           <b>Select a status</b>
         </label>
-        <select id="status" name="status" defaultValue={'Select a status'}>
+        <select id="status" name="status" defaultValue={"Select a status"} onChange={updateStatusSelect}>
           <option disabled>
             Select a status
           </option>
@@ -38,7 +81,7 @@ const AddEditStatus = () => {
         <label htmlFor="psw">
           <b>Write new status</b>
         </label>
-        <input type="text" placeholder="Write new status" name="psw" required />
+        <input type="text" placeholder="Write new status" name="psw" value={statusMessage} onChange={updateStatusText}/>
         <div className="date-time">
           <label htmlFor="StartDate">
             <b>From</b>
@@ -69,7 +112,7 @@ const AddEditStatus = () => {
             className="custom-datepicker"
           />
         </div>
-        <button type="submit">Add</button>
+        <button type="submit" disabled={!validSubmit}>Add</button>
       </form>
     </div>
   );

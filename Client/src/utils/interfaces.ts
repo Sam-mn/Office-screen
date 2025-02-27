@@ -51,6 +51,7 @@ export interface IOfficeScreenContext {
   clearTokens: () => void;
   getForwardPage: () => string;
   fetchDefaultStatuses: () => Promise<string[]>;
+  sendStatusUpdate: (statusUpdate: IStatusUpdate) => void;
 }
 
 export interface ITokenObjectExtensions extends JwtPayload {
@@ -74,4 +75,10 @@ export interface IFetchParams {
 export interface ITokenRefresh {
   newTokens: ITokens,
   expired: boolean
+}
+
+export interface IStatusUpdate {
+  status: string,
+  startTime: string,
+  endTime: string
 }
