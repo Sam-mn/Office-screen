@@ -47,10 +47,14 @@ const ShowRandomWebComic = () => {
 
   return (
     <div className="webcomic-form">
+      {!comicDetails?.url || (!comicDetails?.filePath && <p>Loading...</p>)}
+
       {comicDetails?.url && <img src={comicDetails.url} />}
       {comicDetails?.filePath && <img src={comicDetails.filePath} />}
       <p>{comicDetails?.text}</p>
-      <button onClick={handleAddComic}>Publish</button>
+      {(comicDetails?.url || comicDetails?.filePath) && (
+        <button onClick={handleAddComic}>Publish</button>
+      )}
     </div>
   );
 };

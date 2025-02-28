@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import {
   BASE_URL,
   FETCH_ERROR_ACCESS,
@@ -6,12 +5,13 @@ import {
   ITokens,
   IFolder,
   IImportantNote,
+  IFetch,
+  IFetchParams,
+  ITokenRefresh,
+  DEFAULT_TOKENS,
   UserRegistrationData,
   IComic,
 } from ".";
-import { OfficeScreenContext } from "../context/OfficeScreenContext";
-import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export const handlePublishImage = async (
@@ -98,62 +98,28 @@ export async function login(
   return (await response.json()) as ITokens;
 }
 
-export async function authTest(): Promise<void> {
-  const url = `${BASE_URL}/auth/test-authorization`;
-
-  const response: IFetch<string> = await fetchWithToken<string>(url, {
-    method: "GET",
-  });
-
-  if (response.succeeded === false && response.error !== FETCH_ERROR_DATA) {
-    throw new Error("User not authenticated or authorized.");
-  } else {
-    console.log("User authenticated.");
-  }
-}
-
-/// Fetch functions ///
-
-interface IFetch<T> {
-  succeeded: boolean;
-  error?: string;
-  value?: T;
-}
-
 export async function fetchWithToken<T>(
-  url: RequestInfo | URL,
-  options?: RequestInit
+  params: IFetchParams,
+  accessToken: string
 ): Promise<IFetch<T>> {
-  const context = useContext(OfficeScreenContext);
-  const tokens = context.tokens;
-  const setTokens = context.setTokens;
-
-  // Check and refresh token
-  const tokenIsExpired: boolean = checkTokenExpiration(tokens!.accessToken);
-  if (tokenIsExpired) {
-    const refreshedTokens = await refreshTokens(tokens!);
-    setTokens(refreshedTokens);
-  }
-
-  // Perform fetch
+  // Create request
   const requestInit: RequestInit = createRequestInit(
-    tokens.accessToken,
-    options
+    accessToken,
+    params.options
   );
 
-  // Fetch data
-  const response: Response = await fetch(url, requestInit);
+  console.log("Debugging: " + requestInit.method);
+  console.log("Debugging: " + requestInit.body);
 
-  // Return data
+  // Fetch data
+  const response: Response = await fetch(params.url, requestInit);
+  // Check and return data
   if (response.ok === true) {
-    let jsonValue: any;
-    let returnValue: T;
     try {
-      jsonValue = await response.json();
-      returnValue = jsonValue as T;
+      const value = (await response.json()) as T;
       return {
         succeeded: true,
-        value: returnValue,
+        value: value,
       };
     } catch {
       return {
@@ -162,7 +128,6 @@ export async function fetchWithToken<T>(
       };
     }
   }
-
   return {
     succeeded: false,
     error: FETCH_ERROR_ACCESS,
@@ -172,10 +137,8 @@ export async function fetchWithToken<T>(
 export async function refreshTokens({
   accessToken,
   refreshToken,
-}: ITokens): Promise<ITokens> {
-  console.log("Refreshing token.");
-
-  const url: string = `${BASE_URL}/api/auth/refresh`;
+}: ITokens): Promise<ITokenRefresh> {
+  const url: string = `${BASE_URL}/auth/refresh`;
 
   const response: Response = await fetch(url, {
     method: "POST",
@@ -188,40 +151,33 @@ export async function refreshTokens({
     }),
   });
 
-  if (response.ok === false) {
-    useContext(OfficeScreenContext).clearTokens();
-    const navigate = useNavigate();
-    navigate("/login");
+  if (!response.ok) {
+    return {
+      newTokens: DEFAULT_TOKENS,
+      expired: true,
+    };
   }
 
-  return (await response.json()) as ITokens;
+  const tokens = (await response.json()) as ITokens;
+  return {
+    newTokens: tokens,
+    expired: false,
+  };
 }
 
 /// Helper functions ///
-
-const checkTokenExpiration = (token: string): boolean => {
-  if (!token) return true;
-
-  const decoded = jwtDecode(token);
-  const expire = decoded.exp! * 1000; // * 1000 to get time in milliseconds.
-  const currentTimestamp = Date.now();
-
-  return expire < currentTimestamp;
-};
 
 const createRequestInit = (
   accessToken: string,
   options?: RequestInit
 ): RequestInit => {
   const requestObject: RequestInit = { ...options };
-
   if (accessToken) {
     requestObject.headers = {
       ...options?.headers,
       Authorization: `Bearer ${accessToken}`,
     };
   }
-
   return requestObject;
 };
 

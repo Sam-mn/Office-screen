@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "../css/DisplayScreen.css";
 import {
   getComicReq,
   getImportantNotesReq,
   IImportantNote,
   IUsers,
+  IFetchedUser,
+  IComic,
 } from "../utils";
 import DisplayedUser from "../components/DisplayedUser";
 import { IComicLocalStorage } from "../utils";
 import { useLocalStorage } from "usehooks-ts";
+import { OfficeScreenContext } from "../context/OfficeScreenContext";
 
 const DisplayScreen = () => {
   const [users, setUsers] = useState<IUsers[] | null>(null);
@@ -18,6 +21,7 @@ const DisplayScreen = () => {
   const [importantNotes, setImportantNotes] = useState<IImportantNote[] | null>(
     null
   );
+  const context = useContext(OfficeScreenContext);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [comicData, setComicData, clearComicData] =
     useLocalStorage<IComicLocalStorage | null>("ComicData", null);
@@ -84,6 +88,35 @@ const DisplayScreen = () => {
   }, []);
 
   useEffect(() => {
+    updateUsers();
+  }, []);
+
+  const updateUsers = () => {
+    console.log("Settings users");
+    context.fetchUsers().then((u) => {
+      let userInfo: IUsers[] = [];
+      let idCount = 0;
+      u.forEach((user) => {
+        console.log("For each user. Id: " + idCount);
+        userInfo.push({
+          id: (idCount++).toString(),
+          name: user.name,
+          UserStatus: user.status,
+          startDate: user.statusStartTime,
+          endDate: user.statusEndTime,
+        });
+        console.log("start date: " + user.statusStartTime);
+        console.log("end date: " + user.statusEndTime);
+      });
+      if (userInfo.length < 1) {
+        defaultUsers();
+      } else {
+        setUsers(userInfo);
+      }
+    });
+  };
+
+  const defaultUsers = () => {
     setUsers([
       {
         id: "1",
@@ -107,7 +140,7 @@ const DisplayScreen = () => {
         endDate: "2021-09-01",
       },
     ]);
-  }, []);
+  };
 
   return (
     <div className="display-screen">

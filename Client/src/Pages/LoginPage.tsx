@@ -26,8 +26,8 @@ const LoginPage = () => {
   const attemptLogin: FormEventHandler<HTMLFormElement> = async (form) => {
     form.preventDefault();
     try {
-      setTokens(await login(username, password));
       setForward(true);
+      setTokens(await login(username, password));
       setLoginFailed(false);
       
     }
