@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import "../css/DisplayScreen.css";
-import { IComic, IFetchedUser, IImportantNote, IUsers } from "../utils";
+import { IComic, IImportantNote, IUsers } from "../utils";
 import DisplayedUser from "../components/DisplayedUser";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
 

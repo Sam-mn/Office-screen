@@ -7,14 +7,10 @@ import {
 
 import {
   AddEditStatus,
-  AddWebComicPage,
   AdminPage,
-  DisplayScreen,
   Forbidden,
   LoginPage,
-  NotesPage,
-  UserRegistration,
-} from "../pages";
+ } from "../pages";
 import { ResourceAuth } from "../components/ResourceAuth";
 import { Auth } from "../components/Auth";
 
