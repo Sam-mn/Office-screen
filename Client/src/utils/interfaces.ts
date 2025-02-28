@@ -22,9 +22,9 @@ export interface IUsers {
 
 export interface IFetchedUser {
   name: string;
-  UserStatus: string;
-  startDate: string;
-  endDate: string;
+  status: string;
+  statusStartTime: string;
+  statusEndTime: string;
 }
 
 export interface IImportantNote {

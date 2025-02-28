@@ -99,7 +99,7 @@ const AddEditStatus = () => {
             className="custom-datepicker"
           />
           <label htmlFor="EndDate">
-            <b>Till</b>
+            <b>To</b>
           </label>
           <DatePicker
             selected={selectedEndDate}

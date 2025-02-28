@@ -30,8 +30,7 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
             console.log("Refreshing token, old refreshToken: " + tokens.refreshToken);
             const refreshedTokens = await refreshTokens(tokens!);
             if (refreshedTokens.expired) {
-                console.log("Refresh token expired, clearing tokens.")
-                clearTokens();
+                //console.log("Refresh token may have expired, if you have any issues, please log in again.");
                 return false;
             }
             else {

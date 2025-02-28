@@ -51,10 +51,12 @@ const DisplayScreen = () => {
         userInfo.push({
           id: (idCount++).toString(),
           name: user.name,
-          UserStatus: user.UserStatus,
-          startDate: user.startDate,
-          endDate: user.endDate
+          UserStatus: user.status,
+          startDate: user.statusStartTime,
+          endDate: user.statusEndTime
         })
+        console.log("start date: " + user.statusStartTime)
+        console.log("end date: " + user.statusEndTime)
       });
       if (userInfo.length < 1) {
         defaultUsers();
