@@ -11,6 +11,7 @@ import {
   DEFAULT_TOKENS,
   UserRegistrationData,
   IComic,
+  DailyMenuResponse,
 } from ".";
 import axios from "axios";
 
@@ -311,6 +312,21 @@ export const getImportantNotesReq = async (): Promise<IImportantNote[]> => {
     return response.data;
   } catch (error) {
     console.error("Error fetching important notes:", error);
+    throw error;
+  }
+};
+
+export const getLunchMenuReq = async (): Promise<DailyMenuResponse> => {
+  try {
+    const response = await axios.get<DailyMenuResponse>(
+      `${BASE_URL}/lunchMenus`
+    );
+    return {
+      dayMenu: JSON.parse(response.data.dayMenu),
+      day: response.data.day,
+    };
+  } catch (error) {
+    console.error("Error fetching note:", error);
     throw error;
   }
 };

@@ -84,17 +84,33 @@ export interface IDefaultStatuses {
 }
 
 export interface IFetchParams {
-  url: RequestInfo | URL,
-  options?: RequestInit
+  url: RequestInfo | URL;
+  options?: RequestInit;
 }
 
 export interface ITokenRefresh {
-  newTokens: ITokens,
-  expired: boolean
+  newTokens: ITokens;
+  expired: boolean;
 }
 
 export interface IStatusUpdate {
-  Status: string,
-  StartTime: string,
-  EndTime: string
+  Status: string;
+  StartTime: string;
+  EndTime: string;
+}
+
+export interface MenuItem {
+  description: string;
+  name: string;
+  price: string;
+  tags: string[];
+}
+
+export interface DayMenu {
+  MenuItems: MenuItem[];
+}
+
+export interface DailyMenuResponse {
+  dayMenu: string;
+  day: string;
 }

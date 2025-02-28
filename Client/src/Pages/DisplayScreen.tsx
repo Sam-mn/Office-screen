@@ -5,8 +5,8 @@ import {
   getImportantNotesReq,
   IImportantNote,
   IUsers,
-  IFetchedUser,
-  IComic,
+  getLunchMenuReq,
+  DailyMenuResponse,
 } from "../utils";
 import DisplayedUser from "../components/DisplayedUser";
 import { IComicLocalStorage } from "../utils";
@@ -25,6 +25,7 @@ const DisplayScreen = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [comicData, setComicData, clearComicData] =
     useLocalStorage<IComicLocalStorage | null>("ComicData", null);
+  const [lunchMenu, setLunchMenu] = useState<DailyMenuResponse | null>(null);
 
   const getImportantNotes = async () => {
     const notesData = await getImportantNotesReq();
@@ -56,6 +57,7 @@ const DisplayScreen = () => {
 
   useEffect(() => {
     getComic();
+    getMenu();
   }, []);
 
   useEffect(() => {
@@ -63,9 +65,13 @@ const DisplayScreen = () => {
     const importantNotesSocket = new WebSocket(
       "https://localhost:7078/ws/importantNotes"
     );
+    const userStatusSocket = new WebSocket(
+      "https://localhost:7078/ws/userStatus"
+    );
 
     comicSocket.onopen = () => console.log("Connected to WebSocket");
     importantNotesSocket.onopen = () => console.log("Connected to WebSocket");
+    userStatusSocket.onopen = () => console.log("Connected to WebSocket");
 
     comicSocket.onmessage = (event) => {
       console.log("New message:", event.data);
@@ -75,6 +81,12 @@ const DisplayScreen = () => {
     importantNotesSocket.onmessage = (event) => {
       console.log("New message:", event.data);
       setImportantNotes(JSON.parse(event.data));
+    };
+
+    userStatusSocket.onmessage = (event) => {
+      console.log("New message:", event.data);
+      console.log("ussssser", event.data);
+      updateUsers();
     };
 
     comicSocket.onclose = () => console.log("Comic WebSocket disconnected");
@@ -91,8 +103,12 @@ const DisplayScreen = () => {
     updateUsers();
   }, []);
 
+  const getMenu = async () => {
+    const response = await getLunchMenuReq();
+    setLunchMenu(response);
+  };
+
   const updateUsers = () => {
-    console.log("Settings users");
     context.fetchUsers().then((u) => {
       let userInfo: IUsers[] = [];
       let idCount = 0;
@@ -105,8 +121,6 @@ const DisplayScreen = () => {
           startDate: user.statusStartTime,
           endDate: user.statusEndTime,
         });
-        console.log("start date: " + user.statusStartTime);
-        console.log("end date: " + user.statusEndTime);
       });
       if (userInfo.length < 1) {
         defaultUsers();
@@ -165,38 +179,25 @@ const DisplayScreen = () => {
           {comicDetails?.text && <p>{comicDetails.text}</p>}
         </div>
         <div className="MenuDiv">
-          <h2>Lunch menu</h2>
-          <ul className="menu-list">
-            <li className="menu-item">
-              <h3 className="item-name">Pasta casareche</h3>
-              <p className="item-description">
-                med skinksås (går att få glutenfri)
-              </p>
-              <p className="item-price">115 kr</p>
-              <ul className="item-tags">
-                <li>Laktosfri</li>
+          {
+            <>
+              <h2>{lunchMenu?.day}'s Lunch menu</h2>
+              <ul className="menu-list">
+                {lunchMenu?.dayMenu.MenuItems.map((item, index) => (
+                  <li className="menu-item" key={index}>
+                    <h3 className="item-name">{item.name}</h3>
+                    <p className="item-description">{item.description}</p>
+                    <p className="item-price">{item.price}</p>
+                    <ul className="item-tags">
+                      {item.tags.map((tag, index2) => (
+                        <li key={index2}>{tag}</li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
               </ul>
-            </li>
-            <li className="menu-item">
-              <h3 className="item-name">Tapenade bakad alaska pollock</h3>
-              <p className="item-description">med citronsås och potatis</p>
-              <p className="item-price">115 kr</p>
-              <ul className="item-tags">
-                <li>Glutenfri</li>
-                <li>Laktosfri</li>
-              </ul>
-            </li>
-            <li className="menu-item">
-              <h3 className="item-name">Pasta casareche</h3>
-              <p className="item-description">
-                med vegansås (går att få glutenfri)
-              </p>
-              <p className="item-price">115 kr</p>
-              <ul className="item-tags">
-                <li>Laktosfri</li>
-              </ul>
-            </li>
-          </ul>
+            </>
+          }
         </div>
       </div>
     </div>

@@ -63,6 +63,14 @@ const AddEditStatus = () => {
       StartTime: startTime,
       EndTime: endTime,
     };
+
+    const socket = new WebSocket("https://localhost:7078/ws/userStatus");
+    socket.onopen = () => {
+      socket.send(JSON.stringify(s));
+
+      socket.close();
+    };
+
     console.log(
       "New status: " +
         message +
