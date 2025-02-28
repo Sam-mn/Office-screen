@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "../css/DisplayScreen.css";
-import { authTest, IComic, IImportantNote, IUsers } from "../utils";
+import { IComic, IImportantNote, IUsers } from "../utils";
 import DisplayedUser from "../components/DisplayedUser";
 
 const DisplayScreen = () => {
@@ -57,10 +57,12 @@ const DisplayScreen = () => {
     setComicDetails({
       id: 1,
       filePath: null,
-      url: "https://localhost:7078/static/images/XKCD/10ff684d-223f-4491-8de6-37abe7f15b81.png",
+      url: "https://localhost:7078/static/images/aca3f1d3-2a18-42c7-8fcc-2a45a0f70e1f.png",
       text: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusamu quasi placeat nobis. Ducimus.",
     });
   }, []);
+
+  // Client\public\images\aca3f1d3-2a18-42c7-8fcc-2a45a0f70e1f.png
 
   return (
     <div className="display-screen">

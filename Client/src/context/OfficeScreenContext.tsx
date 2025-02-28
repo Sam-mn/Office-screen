@@ -1,7 +1,7 @@
 import { createContext, ReactElement, ReactNode } from "react";
-import { DEFAULT_TOKENS, IOfficeScreenContext, ITokenObjectExtensions, ITokens } from "../utils";
+import { DEFAULT_TOKENS, IOfficeScreenContext, ITokens, returnRoleClaim } from "../utils";
 import { useLocalStorage } from 'usehooks-ts';
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
 
 export const OfficeScreenContext = createContext<IOfficeScreenContext>({} as IOfficeScreenContext);
 
@@ -13,10 +13,10 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
     const [tokens, setTokens, clearTokens] = useLocalStorage<ITokens>("Tokens", DEFAULT_TOKENS);
 
     const getForwardPage = (): string => {
-        if (getRole(tokens.accessToken) === "admin") {
+        if (returnRoleClaim(tokens.accessToken) === "admin") {
             return "/admin";
         }
-        return "/addstatus";
+        return "/status";
     }
 
     const context: IOfficeScreenContext = {
@@ -31,11 +31,4 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
     );
 }
 
-const getRole = (accessToken: string): string => {
-    const decodedToken = jwtDecode<ITokenObjectExtensions>(accessToken);
-    const role = decodedToken[
-            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-          ]!.toLowerCase();
-    return role;
-}
         

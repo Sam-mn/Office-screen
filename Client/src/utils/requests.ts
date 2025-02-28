@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { BASE_URL, FETCH_ERROR_ACCESS, FETCH_ERROR_DATA, ITokens, IFolder } from ".";
+import { BASE_URL, FETCH_ERROR_ACCESS, FETCH_ERROR_DATA, ITokens, IFolder, ITokenObjectExtensions } from ".";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -118,13 +118,30 @@ export async function fetchWithToken<T>(
   const context = useContext(OfficeScreenContext);
   const tokens = context.tokens;
   const setTokens = context.setTokens;
+  const clearTokens = context.clearTokens;
+  const navigate = useNavigate();
 
   // Check and refresh token
-  const tokenIsExpired: boolean = checkTokenExpiration(tokens!.accessToken);
+   const tokenIsExpired: boolean = checkTokenExpiration(tokens!.accessToken);
   if (tokenIsExpired) {
-      const refreshedTokens = await refreshTokens(tokens!);
+     
+    try {
+      const refreshedTokens = await refreshTokens(tokens!, clearTokens, navigate);
       setTokens(refreshedTokens);
-  }
+      
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+
+    }
+
+
+   }
+
+  // const tokenIsExpired: boolean = checkTokenExpiration(tokens!.accessToken);
+  // if (tokenIsExpired) {
+  //     const refreshedTokens = await refreshTokens(tokens!);
+  //     setTokens(refreshedTokens);
+  // }
 
   // Perform fetch
   const requestInit: RequestInit = createRequestInit(
@@ -160,18 +177,16 @@ export async function fetchWithToken<T>(
   };
 }
 
-export async function refreshTokens({
-  accessToken,
-  refreshToken,
-}: ITokens): Promise<ITokens> {
-  console.log("Refreshing token.")
+export async function refreshTokens({ accessToken, refreshToken }: ITokens,
+  clearTokens: () => void,  navigate: (path: string) => void): Promise<ITokens> {
+  console.log("Refreshing token.");
 
-  const url: string = `${BASE_URL}/api/auth/refresh`;
+  const url: string = `${BASE_URL}/auth/refresh`;
 
   const response: Response = await fetch(url, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       accessToken,
@@ -179,25 +194,78 @@ export async function refreshTokens({
     }),
   });
 
-  if (response.ok === false) {
-    useContext(OfficeScreenContext).clearTokens();
-    const navigate = useNavigate();
+  console.log(response);
+
+  if (!response.ok) {
+    clearTokens();
     navigate("/login");
+    throw new Error("Token refresh failed.");
   }
 
-  return (await response.json()) as ITokens;
+  const newTokens = (await response.json()) as ITokens;
+  console.log("New Tokens received:", newTokens);
+  return newTokens;
 }
+
+// export async function refreshTokens({
+//   accessToken,
+//   refreshToken,
+// }: ITokens): Promise<ITokens> {
+//   console.log("Refreshing token.")
+
+//   const url: string = `${BASE_URL}/api/auth/refresh`;
+
+//   const response: Response = await fetch(url, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({
+//       accessToken,
+//       refreshToken,
+//     }),
+//   });
+
+//   if (response.ok === false) {
+//     useContext(OfficeScreenContext).clearTokens();
+//     const navigate = useNavigate();
+//     navigate("/login");
+//   }
+
+//   return (await response.json()) as ITokens;
+// }
 
 /// Helper functions ///
 
-const checkTokenExpiration = (token: string): boolean => {
+// const checkTokenExpiration = (token: string): boolean => {
+//   if (!token) return true;
+
+//   const decoded = jwtDecode(token);
+//   const expire = decoded.exp! * 1000; // * 1000 to get time in milliseconds.
+//   const currentTimestamp = Date.now();
+
+//   return expire < currentTimestamp;
+// }
+
+
+export const checkTokenExpiration = (token: string): boolean => {
   if (!token) return true;
 
-  const decoded = jwtDecode(token);
-  const expire = decoded.exp! * 1000; // * 1000 to get time in milliseconds.
-  const currentTimestamp = Date.now();
+  try {
+        
+    const decoded: { exp?: number } = jwtDecode(token);
+    
+      if (!decoded.exp) return true;
 
-  return expire < currentTimestamp;
+      const expire = decoded.exp! * 1000; // * 1000 to get time in milliseconds.
+      const currentTimestamp = Date.now();
+    
+    return expire < currentTimestamp;
+    
+  } catch (error) {
+    console.error("Invalid Token", error);
+    return true;
+  }
 }
 
 const createRequestInit = (accessToken: string, options?: RequestInit): RequestInit => {
@@ -208,4 +276,24 @@ const createRequestInit = (accessToken: string, options?: RequestInit): RequestI
   }
 
   return requestObject;
+}
+
+
+export const returnRoleClaim = (token: string): string => {
+  
+  try {
+  
+    const decodedToken = jwtDecode<ITokenObjectExtensions>(token);
+    const role = decodedToken[ "http://schemas.microsoft.com/ws/2008/06/identity/claims/role" ]!.toLowerCase();
+
+    if (role) {
+      return role;
+    }
+
+  } catch (error) {
+    
+    console.error("unknown role claim", error);
+  }
+
+  return "unknown role claim";
 }
