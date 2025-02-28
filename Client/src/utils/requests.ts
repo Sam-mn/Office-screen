@@ -1,4 +1,18 @@
-import { BASE_URL, FETCH_ERROR_ACCESS, FETCH_ERROR_DATA, ITokens, IFolder, IImportantNote, IFetch, IFetchParams, ITokenRefresh, DEFAULT_TOKENS } from "./";
+import {
+  BASE_URL,
+  FETCH_ERROR_ACCESS,
+  FETCH_ERROR_DATA,
+  ITokens,
+  IFolder,
+  IImportantNote,
+  IFetch,
+  IFetchParams,
+  ITokenRefresh,
+  DEFAULT_TOKENS,
+  UserRegistrationData,
+  IComic,
+  DailyMenuResponse,
+} from ".";
 import axios from "axios";
 
 export const handlePublishImage = async (
@@ -19,7 +33,7 @@ export const handlePublishImage = async (
   console.log(selectedDirectory);
   try {
     const response = await axios.post(
-      "https://localhost:7078/api/Image/upload",
+      "https://localhost:7078/api/image/upload",
       formData,
       {
         headers: {
@@ -27,7 +41,6 @@ export const handlePublishImage = async (
         },
       }
     );
-    console.log(response);
     return response;
   } catch {
     alert("Error uploading file.");
@@ -65,7 +78,10 @@ export const addFolderReq = async (
   }
 };
 
-export async function login(username: string, password: string): Promise<ITokens> {
+export async function login(
+  username: string,
+  password: string
+): Promise<ITokens> {
   const url = `${BASE_URL}/auth/login`;
 
   const response: Response = await fetch(url, {
@@ -158,20 +174,165 @@ export async function refreshTokens({
 
 /// Helper functions ///
 
-const createRequestInit = (accessToken: string, options?: RequestInit): RequestInit => {
+const createRequestInit = (
+  accessToken: string,
+  options?: RequestInit
+): RequestInit => {
   const requestObject: RequestInit = { ...options };
   if (accessToken) {
-    requestObject.headers = { ...options?.headers, Authorization: `Bearer ${accessToken}` };
+    requestObject.headers = {
+      ...options?.headers,
+      Authorization: `Bearer ${accessToken}`,
+    };
   }
   return requestObject;
-}
+};
+
+export const getComicReq = async (): Promise<IComic> => {
+  try {
+    const response = await axios.get<IComic>(`${BASE_URL}/webcomics/latest`);
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching folders:", error);
+    throw error;
+  }
+};
+
+export const getRandomComicReq = async (): Promise<IComic> => {
+  try {
+    const response = await axios.get<IComic>(`${BASE_URL}/webcomics/random`);
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching folders:", error);
+    throw error;
+  }
+};
+
+export const handlePublishImageFromUrl = async (
+  imageUrl: string,
+  text: string
+) => {
+  try {
+    const formData = new FormData();
+    formData.append("text", text);
+    formData.append("imageUrl", imageUrl || "");
+
+    const response = await axios.post(
+      "https://localhost:7078/api/image/download",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response;
+  } catch {
+    throw new Error("Login failed.");
+  }
+};
+
+export const addNoteReq = async (
+  note: string
+): Promise<{ data: IImportantNote; status: number }> => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/importantNotes`,
+      { note },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return { data: response.data, status: response.status };
+  } catch (error) {
+    console.error("Error adding note:", error);
+    throw error;
+  }
+};
+
+export const EditNoteReq = async (
+  id: number,
+  importantNote: IImportantNote
+): Promise<{ data: IImportantNote; status: number }> => {
+  try {
+    const response = await axios.put(
+      `${BASE_URL}/importantNotes/${id}`,
+      importantNote,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return { data: response.data, status: response.status };
+  } catch (error) {
+    console.error("Error adding note:", error);
+    throw error;
+  }
+};
+
+export const getImportantNotReq = async (
+  id: number
+): Promise<IImportantNote> => {
+  try {
+    const response = await axios.get<IImportantNote>(
+      `${BASE_URL}/importantNotes/${id}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching note:", error);
+    throw error;
+  }
+};
+
+export const deleteImportantNote = async (
+  id: number
+): Promise<{ data: IImportantNote; status: number }> => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/importantNotes/${id}`);
+    return { data: response.data, status: response.status };
+  } catch (error) {
+    console.error("Error adding note:", error);
+    throw error;
+  }
+};
+
+export const addNewUser = async (userData: UserRegistrationData) => {
+  const response = await axios.post(`${BASE_URL}/auth/register`, userData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return { data: response };
+};
 
 export const getImportantNotesReq = async (): Promise<IImportantNote[]> => {
   try {
-    const response = await axios.get<IImportantNote[]>(`${BASE_URL}/importantNotes`);
+    const response = await axios.get<IImportantNote[]>(
+      `${BASE_URL}/importantNotes`
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching important notes:", error);
+    throw error;
+  }
+};
+
+export const getLunchMenuReq = async (): Promise<DailyMenuResponse> => {
+  try {
+    const response = await axios.get<DailyMenuResponse>(
+      `${BASE_URL}/lunchMenus`
+    );
+    return {
+      dayMenu: JSON.parse(response.data.dayMenu),
+      day: response.data.day,
+    };
+  } catch (error) {
+    console.error("Error fetching note:", error);
     throw error;
   }
 };

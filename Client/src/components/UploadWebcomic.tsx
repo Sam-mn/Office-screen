@@ -7,7 +7,8 @@ import {
   getFoldersReq,
   addFolderReq,
 } from "../utils/requests";
-import { IFolder } from "../utils";
+import { IComicLocalStorage, IFolder } from "../utils";
+import { useLocalStorage } from "usehooks-ts";
 
 const UploadWebcomic = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -17,6 +18,9 @@ const UploadWebcomic = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [folders, setFolders] = useState<IFolder[]>([]);
   const [newFolder, setNewFolder] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [comicData, setComicData, clearComicData] =
+    useLocalStorage<IComicLocalStorage | null>("ComicData", null);
 
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
@@ -69,6 +73,27 @@ const UploadWebcomic = () => {
         selectedDirectory,
         imageText
       );
+
+      console.log(response);
+
+      const socket = new WebSocket("https://localhost:7078/ws/comic");
+      socket.onopen = () => {
+        socket.send(
+          JSON.stringify({
+            id: response?.data.id,
+            url: `https://localhost:7078/static/${response?.data.filePath}`,
+            text: imageText,
+          })
+        );
+        setComicData({
+          id: response?.data.id,
+          url: `https://localhost:7078/static/${response?.data.filePath}`,
+          text: imageText,
+        });
+        console.log(response?.data.filePath);
+        socket.close();
+      };
+
       if (response?.status === 200) alert("Image uploaded successfully");
     } catch {
       throw new Error("Login failed.");
@@ -76,8 +101,10 @@ const UploadWebcomic = () => {
   };
 
   const handleAddDirectory = async () => {
-    if (!newFolder) return;
-
+    if (newFolder.trim() === "") {
+      alert("Folder name cannot be empty");
+      return;
+    }
     const folderResponse = await addFolderReq(newFolder);
     if (folderResponse.status === 201) {
       getFolders();

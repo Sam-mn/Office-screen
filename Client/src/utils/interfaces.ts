@@ -1,9 +1,9 @@
 import { JwtPayload } from "jwt-decode";
 
 export interface ITokens {
-    accessToken: string;
-    refreshToken: string;
-    refreshTokenExpirationTime: Date
+  accessToken: string;
+  refreshToken: string;
+  refreshTokenExpirationTime: Date;
 }
 
 export interface IFetch<T> {
@@ -28,7 +28,7 @@ export interface IFetchedUser {
 }
 
 export interface IImportantNote {
-  id: string;
+  id?: number;
   note: string;
 }
 
@@ -37,6 +37,14 @@ export interface IComic {
   filePath: string | null;
   url: string | null;
   text: string;
+  imageName: string;
+  source: string;
+}
+
+export interface IComicLocalStorage {
+  id?: number;
+  url: string | null;
+  text?: string;
 }
 
 export interface UserLoginData {
@@ -49,7 +57,7 @@ export interface UserRegistrationData {
   firstName: string;
   lastName: string;
   password: string;
-  passwordConfirm: string;
+  admin: boolean;
 }
 
 export interface IOfficeScreenContext {
@@ -77,17 +85,33 @@ export interface IDefaultStatuses {
 }
 
 export interface IFetchParams {
-  url: RequestInfo | URL,
-  options?: RequestInit
+  url: RequestInfo | URL;
+  options?: RequestInit;
 }
 
 export interface ITokenRefresh {
-  newTokens: ITokens,
-  expired: boolean
+  newTokens: ITokens;
+  expired: boolean;
 }
 
 export interface IStatusUpdate {
-  Status: string,
-  StartTime: string,
-  EndTime: string
+  Status: string;
+  StartTime: string;
+  EndTime: string;
+}
+
+export interface MenuItem {
+  description: string;
+  name: string;
+  price: string;
+  tags: string[];
+}
+
+export interface DayMenu {
+  MenuItems: MenuItem[];
+}
+
+export interface DailyMenuResponse {
+  dayMenu: string;
+  day: string;
 }
