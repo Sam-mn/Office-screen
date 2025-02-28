@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import "../css/DisplayScreen.css";
-import { getComicReq, IImportantNote, IUsers } from "../utils";
+import {
+  getComicReq,
+  getImportantNotesReq,
+  IImportantNote,
+  IUsers,
+} from "../utils";
 import DisplayedUser from "../components/DisplayedUser";
 import { IComicLocalStorage } from "../utils";
 import { useLocalStorage } from "usehooks-ts";
@@ -16,6 +21,16 @@ const DisplayScreen = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [comicData, setComicData, clearComicData] =
     useLocalStorage<IComicLocalStorage | null>("ComicData", null);
+
+  const getImportantNotes = async () => {
+    const notesData = await getImportantNotesReq();
+    setImportantNotes(notesData);
+    console.log(notesData);
+  };
+
+  useEffect(() => {
+    getImportantNotes();
+  }, []);
 
   const getComic = async () => {
     if (comicData) {

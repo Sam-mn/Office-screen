@@ -2,35 +2,31 @@ import { useEffect, useState } from "react";
 import Popup from "../components/Popup";
 import "../css/NotesPage.css";
 import { MdEdit, MdDelete } from "react-icons/md";
-import { getImportantNotesReq } from "../utils/requests";
-import { useEffect, useState } from "react";
+import {
+  addNoteReq,
+  deleteImportantNote,
+  EditNoteReq,
+  getImportantNotesReq,
+  getImportantNotReq,
+} from "../utils/requests";
 import { IImportantNote } from "../utils";
 
 const NotesPage = () => {
   const [importantNotes, setImportantNotes] = useState<IImportantNote[]>([]);
-
-  const getImportantNotes = async () => {
-    const notesData = await getImportantNotesReq();
-    setImportantNotes(notesData);
-    console.log(notesData);
-  };
-
-  useEffect(() => {
-    getImportantNotes();
-  }, []);
-
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [importantNoteList, setImportantNoteList] = useState<IImportantNote[]>(
-    []
-  );
   const [isDeletePopupOpen, setDeleteIsPopupOpen] = useState(false);
   const [newImportantNote, setNewImportantNote] = useState("");
   const [edit, setEdit] = useState(false);
   const [noteToEdit, setNoteToEdit] = useState<IImportantNote | null>(null);
   const [noteToDelete, setNoteToDelete] = useState<IImportantNote | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
+
+  const getImportantNotes = async () => {
+    const notesData = await getImportantNotesReq();
+    setImportantNotes(notesData);
+  };
 
   const getNoteToEdit = async (id: number) => {
     const response = await getImportantNotReq(id);
@@ -39,19 +35,22 @@ const NotesPage = () => {
   };
 
   useEffect(() => {
-    if (edit) {
-      getNoteToEdit(2);
+    getImportantNotes();
+  }, []);
+
+  useEffect(() => {
+    if (edit && noteToEdit?.id) {
+      getNoteToEdit(noteToEdit?.id);
+      console.log(noteToEdit);
     }
-  }, [edit]);
+  }, [edit, noteToEdit?.id]);
 
   const handleImportantNote = async () => {
     if (newImportantNote.trim() === "") {
       alert("Note cannot be empty");
       return;
     }
-
     let response;
-
     if (edit && noteToEdit?.id) {
       response = await EditNoteReq(noteToEdit.id, {
         ...noteToEdit,
@@ -67,8 +66,6 @@ const NotesPage = () => {
       setNewImportantNote("");
       setNoteToEdit(null);
       setEdit(false);
-      setImportantNoteList([...importantNoteList, response.data]);
-      console.log(importantNoteList);
       SendToDisplay();
       closePopup();
     }
@@ -79,15 +76,20 @@ const NotesPage = () => {
 
     console.log(response);
 
-    if (response?.status === 201 || response?.status === 200) {
-      closePopup();
+    if (response?.status === 204 || response?.status === 200) {
+      setNoteToDelete(null);
+
+      SendToDisplay();
+      setDeleteIsPopupOpen(false);
     }
   };
 
-  const SendToDisplay = () => {
+  const SendToDisplay = async () => {
+    const notesData = await getImportantNotesReq();
+    setImportantNotes(notesData);
     const socket = new WebSocket("https://localhost:7078/ws/importantNotes");
     socket.onopen = () => {
-      socket.send(JSON.stringify(importantNoteList));
+      socket.send(JSON.stringify(notesData));
       socket.close();
     };
   };
@@ -151,82 +153,29 @@ const NotesPage = () => {
           <li key={n.id}>
             <span>{n.note}</span>
             <div>
-              <button className="edit">
+              <button
+                className="edit"
+                onClick={() => {
+                  setEdit(true);
+                  setNoteToEdit(n);
+                  openPopup();
+                }}
+              >
                 <MdEdit color="#FFC107" size={22} />
               </button>{" "}
               <button className="delete">
-                <MdDelete color="#E34724" size={22} />
+                <MdDelete
+                  color="#E34724"
+                  size={22}
+                  onClick={() => {
+                    setNoteToDelete(n);
+                    setDeleteIsPopupOpen(true);
+                  }}
+                />
               </button>
             </div>
           </li>
         ))}
-        {/* <li>
-          <span>note 1</span>
-          <div>
-            <button
-              className="edit"
-              onClick={() => {
-                setEdit(true);
-                openPopup();
-              }}
-            >
-              <MdEdit color="#FFC107" size={22} />
-            </button>{" "}
-            <button
-              className="delete"
-              onClick={() => {
-                setNoteToDelete({ id: 1, note: "note 1" });
-                setDeleteIsPopupOpen(true);
-              }}
-            >
-              <MdDelete color="#E34724" size={22} />
-            </button>
-          </div>
-        </li>
-        <li>
-          <span>note 2</span>
-          <div>
-            <button className="edit">
-              <MdEdit color="#FFC107" size={22} />
-            </button>{" "}
-            <button className="delete">
-              <MdDelete color="#E34724" size={22} />
-            </button>
-          </div>
-        </li>{" "}
-        <li>
-          <span>note 3</span>
-          <div>
-            <button className="edit">
-              <MdEdit color="#FFC107" size={22} />
-            </button>{" "}
-            <button className="delete">
-              <MdDelete color="#E34724" size={22} />
-            </button>
-          </div>
-        </li>{" "}
-        <li>
-          <span>note 4</span>
-          <div>
-            <button className="edit">
-              <MdEdit color="#FFC107" size={22} />
-            </button>{" "}
-            <button className="delete">
-              <MdDelete color="#E34724" size={22} />
-            </button>
-          </div>
-        </li>{" "}
-        <li>
-          <span>note 5</span>
-          <div>
-            <button className="edit">
-              <MdEdit color="#FFC107" size={22} />
-            </button>{" "}
-            <button className="delete">
-              <MdDelete color="#E34724" size={22} />
-            </button>
-          </div>
-        </li> */}
       </ul>
     </div>
   );

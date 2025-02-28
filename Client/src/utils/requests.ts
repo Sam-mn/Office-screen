@@ -6,6 +6,8 @@ import {
   ITokens,
   IFolder,
   IImportantNote,
+  UserRegistrationData,
+  IComic,
 } from ".";
 import { OfficeScreenContext } from "../context/OfficeScreenContext";
 import { jwtDecode } from "jwt-decode";
