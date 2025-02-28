@@ -1,5 +1,5 @@
 import { createContext, ReactElement, ReactNode } from "react";
-import { DEFAULT_TOKENS, IOfficeScreenContext, ITokens, returnRoleClaim } from "../utils";
+import { BASE_URL, DEFAULT_TOKENS, fetchWithToken, IDefaultStatuses, IFetch, IFetchedUser, IFetchParams, IOfficeScreenContext, IStatusUpdate, ITokenObjectExtensions, ITokens, IUsers, refreshTokens } from "../utils";
 import { useLocalStorage } from 'usehooks-ts';
 // import { jwtDecode } from "jwt-decode";
 
@@ -18,12 +18,137 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
         }
         return "/status";
     }
+    
+    async function fetchWithContext<T>(params: IFetchParams): Promise<IFetch<T>> {
+        await checkTokens();
+        return await fetchWithToken<T>(params, tokens.accessToken);
+    }
+
+    const checkTokens = async(): Promise<boolean> => {
+        const tokenIsExpired: boolean = checkTokenExpiration(tokens!.accessToken);
+        if (tokenIsExpired) {
+            console.log("Refreshing token, old refreshToken: " + tokens.refreshToken);
+            const refreshedTokens = await refreshTokens(tokens!);
+            if (refreshedTokens.expired) {
+                //console.log("Refresh token may have expired, if you have any issues, please log in again.");
+                return false;
+            }
+            else {
+                setTokens(refreshedTokens.newTokens);
+                console.log("Refreshing token, new refreshtoken: " + refreshedTokens.newTokens.refreshToken);
+            }
+        }
+        return true;
+    }
+
+    async function fetchDefaultStatuses(): Promise<string[]> {
+      const params: IFetchParams = {
+        url: `${BASE_URL}/status/default`,
+        options: {method: "Get"}
+      }
+      const response: IFetch<IDefaultStatuses> = await fetchWithContext<IDefaultStatuses>(params);
+      if (response.succeeded === false) {
+        throw new Error("Fetching default statuses failed.");
+      }
+      return response.value!.defaultStatus;
+    }
+
+    function sendStatusUpdate(statusUpdate: IStatusUpdate): void {
+        const params: IFetchParams = {
+            url: `${BASE_URL}/status/set`,
+            options: {
+                method: "Post",
+                headers: {
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify(statusUpdate),
+            }
+        }
+        console.log("New status: " + statusUpdate.Status)
+        fetchWithContext(params);
+    }
+
+    async function fetchUsers(): Promise<IFetchedUser[]> {
+        const params: IFetchParams = {
+            url: `${BASE_URL}/status/all`,
+            options: {method: "Get"}
+          }
+          const response: IFetch<IFetchedUser[]> = await fetchWithContext<IFetchedUser[]>(params);
+          if (response.succeeded === false) {
+            throw new Error("Fetching default statuses failed.");
+          }
+          return response.value!;
+    }
+    
+    async function fetchWithContext<T>(params: IFetchParams): Promise<IFetch<T>> {
+        await checkTokens();
+        return await fetchWithToken<T>(params, tokens.accessToken);
+    }
+
+    const checkTokens = async(): Promise<boolean> => {
+        const tokenIsExpired: boolean = checkTokenExpiration(tokens!.accessToken);
+        if (tokenIsExpired) {
+            console.log("Refreshing token, old refreshToken: " + tokens.refreshToken);
+            const refreshedTokens = await refreshTokens(tokens!);
+            if (refreshedTokens.expired) {
+                //console.log("Refresh token may have expired, if you have any issues, please log in again.");
+                return false;
+            }
+            else {
+                setTokens(refreshedTokens.newTokens);
+                console.log("Refreshing token, new refreshtoken: " + refreshedTokens.newTokens.refreshToken);
+            }
+        }
+        return true;
+    }
+
+    async function fetchDefaultStatuses(): Promise<string[]> {
+      const params: IFetchParams = {
+        url: `${BASE_URL}/status/default`,
+        options: {method: "Get"}
+      }
+      const response: IFetch<IDefaultStatuses> = await fetchWithContext<IDefaultStatuses>(params);
+      if (response.succeeded === false) {
+        throw new Error("Fetching default statuses failed.");
+      }
+      return response.value!.defaultStatus;
+    }
+
+    function sendStatusUpdate(statusUpdate: IStatusUpdate): void {
+        const params: IFetchParams = {
+            url: `${BASE_URL}/status/set`,
+            options: {
+                method: "Post",
+                headers: {
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify(statusUpdate),
+            }
+        }
+        console.log("New status: " + statusUpdate.Status)
+        fetchWithContext(params);
+    }
+
+    async function fetchUsers(): Promise<IFetchedUser[]> {
+        const params: IFetchParams = {
+            url: `${BASE_URL}/status/all`,
+            options: {method: "Get"}
+          }
+          const response: IFetch<IFetchedUser[]> = await fetchWithContext<IFetchedUser[]>(params);
+          if (response.succeeded === false) {
+            throw new Error("Fetching default statuses failed.");
+          }
+          return response.value!;
+    }
 
     const context: IOfficeScreenContext = {
         tokens,
         setTokens,
         clearTokens,
-        getForwardPage
+        getForwardPage,
+        fetchDefaultStatuses,
+        sendStatusUpdate,
+        fetchUsers
     };
 
     return (
@@ -31,4 +156,18 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
     );
 }
 
+const getRole = (accessToken: string): string => {
+    const decodedToken = jwtDecode<ITokenObjectExtensions>(accessToken);
+    const role = decodedToken[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ]!.toLowerCase();
+    return role;
+}
         
+const checkTokenExpiration = (token: string): boolean => {
+    if (!token) return true;
+    const decoded = jwtDecode(token);
+    const expire = decoded.exp! * 1000; // * 1000 to get time in milliseconds.
+    const currentTimestamp = Date.now();
+    return expire < currentTimestamp;
+  }

@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "../css/DisplayScreen.css";
-import { IComic, IImportantNote, IUsers } from "../utils";
+import { IComic, IFetchedUser, IImportantNote, IUsers } from "../utils";
 import DisplayedUser from "../components/DisplayedUser";
+import { OfficeScreenContext } from "../context/OfficeScreenContext";
 
 const DisplayScreen = () => {
   const [users, setUsers] = useState<IUsers[] | null>(null);
@@ -9,32 +10,10 @@ const DisplayScreen = () => {
   const [importantNotes, setImportantNotes] = useState<IImportantNote[] | null>(
     null
   );
+  const context = useContext(OfficeScreenContext);
 
   useEffect(() => {
-    setUsers([
-      {
-        id: "1",
-        name: "Ammar",
-        UserStatus: "In office",
-        startDate: "2021-09-01",
-        endDate: "2021-09-01",
-      },
-      {
-        id: "2",
-        name: "Daniel",
-        UserStatus: "Away",
-        startDate: "2021-09-01",
-        endDate: "2021-09-01",
-      },
-      {
-        id: "3",
-        name: "Samer",
-        UserStatus: "Busy",
-        startDate: "2021-09-01",
-        endDate: "2021-09-01",
-      },
-    ]);
-
+    updateUsers();
     setImportantNotes([
       {
         id: "1",
@@ -62,7 +41,57 @@ const DisplayScreen = () => {
     });
   }, []);
 
-  // Client\public\images\aca3f1d3-2a18-42c7-8fcc-2a45a0f70e1f.png
+  const updateUsers = () => {
+    console.log("Settings users")
+    context.fetchUsers().then((u) => {
+      let userInfo: IUsers[] = [];
+      let idCount = 0;
+      u.forEach(user => {
+        console.log("For each user. Id: " + idCount)
+        userInfo.push({
+          id: (idCount++).toString(),
+          name: user.name,
+          UserStatus: user.status,
+          startDate: user.statusStartTime,
+          endDate: user.statusEndTime
+        })
+        console.log("start date: " + user.statusStartTime)
+        console.log("end date: " + user.statusEndTime)
+      });
+      if (userInfo.length < 1) {
+        defaultUsers();
+      }
+      else {
+        setUsers(userInfo);
+      }
+    });
+  }
+
+  const defaultUsers = () => {
+    setUsers([
+      {
+        id: "1",
+        name: "Ammar",
+        UserStatus: "In office",
+        startDate: "2021-09-01",
+        endDate: "2021-09-01",
+      },
+      {
+        id: "2",
+        name: "Daniel",
+        UserStatus: "Away",
+        startDate: "2021-09-01",
+        endDate: "2021-09-01",
+      },
+      {
+        id: "3",
+        name: "Samer",
+        UserStatus: "Busy",
+        startDate: "2021-09-01",
+        endDate: "2021-09-01",
+      },
+    ]);
+  }
 
   return (
     <div className="display-screen">
