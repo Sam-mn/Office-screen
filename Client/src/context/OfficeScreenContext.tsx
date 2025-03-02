@@ -1,5 +1,5 @@
 import { createContext, ReactElement, ReactNode } from "react";
-import { BASE_URL, DEFAULT_TOKENS, fetchWithToken ,IDefaultStatuses, IFetch, IFetchedUser, IFetchParams, IOfficeScreenContext, IStatusUpdate, ITokenObjectExtensions, ITokens, refreshTokens } from "../utils";
+import { BASE_URL, DEFAULT_TOKENS, fetchWithToken ,IDefaultStatuses, IFetch, IFetchedUser, IFetchParams, IOfficeScreenContext, IStatusUpdate, ITokenObjectExtensions, ITokens, refreshTokens, TOKEN_ROLE_IDENTIFIER } from "../utils";
 import { useLocalStorage } from 'usehooks-ts';
 import { jwtDecode } from "jwt-decode";
 
@@ -102,11 +102,8 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
 
 const getRole = (accessToken: string): string => {
   const decodedToken = jwtDecode<ITokenObjectExtensions>(accessToken);
-  const role =
-    decodedToken[
-      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-    ]!.toLowerCase();
-  return role;
+  const role = decodedToken[TOKEN_ROLE_IDENTIFIER] as string | undefined;
+  return role?.toLowerCase() || "unkown";
 };
 
 

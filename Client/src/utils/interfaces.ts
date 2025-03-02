@@ -1,5 +1,6 @@
 import { JwtPayload } from "jwt-decode";
 
+
 export interface ITokens {
   accessToken: string;
   refreshToken: string;
@@ -74,7 +75,8 @@ export interface IOfficeScreenContext {
 
 export interface ITokenObjectExtensions extends JwtPayload {
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
-  
+  [ key: string ]: unknown;
+ 
 }
 
 export interface IFolder {
