@@ -1,69 +1,71 @@
 import { ReactElement, useEffect, useState } from "react";
-import { returnRoleClaim ,checkTokenExpiration, refreshTokens ,useOfficeContext } from "../utils";
-import { useNavigate } from "react-router-dom";
+import { useOfficeContext } from "../utils";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface IRequireAuthProps {
   children: ReactElement;
 }
 
-export function ResourceAuth({ children }: IRequireAuthProps): ReactElement {
-  const { tokens, setTokens, clearTokens } = useOfficeContext();
+export function ResourceAuth({ children }: IRequireAuthProps): ReactElement | null {
+  const { checkTokens, getRole,tokens} = useOfficeContext();
   const navigate = useNavigate();
-  const [role, setRole] = useState<string | null>(null);
-
-  useEffect(() => {
+  const location = useLocation();
+  const [role, setRole ] = useState<string>("");
+  const [authToken, setAuthToken] = useState<boolean | null>(null);
   
-    const checkAndRefresh = async () => {
-      if (!tokens?.accessToken) {
-        navigate("/403");
-        return;
-      }
-         
-      // let refreshedTokens = tokens;
+
+
+  const allUserAllowedPaths = ["/status"];
+  
+  
+  useEffect(() => {
+    // console.log("Entering useEffect should be routing to Log-in page")
+       
+    const checkAuth = async () => {
+          
+      const isAuthenticated = await checkTokens();
       
-      // Check and refresh token
-      const tokenIsExpired: boolean = checkTokenExpiration(tokens!.accessToken);
-        
-      if (!tokenIsExpired) {
-        return;
-      }
-      try {
-        const refreshedTokens = await refreshTokens(tokens, clearTokens, navigate);
+      // console.log("Has the token been refreshed: ", isAuthenticated);
+      setAuthToken(isAuthenticated);
 
-        if (JSON.stringify(tokens) !== JSON.stringify(refreshedTokens.refreshToken)) {
-          setTokens(refreshedTokens);
-
-          console.log("refreshed tokens", tokens);
-
-        }
-        console.log("saved refresh token:", refreshedTokens.refreshToken);
-        
-      } catch (error) {
-        console.error("Token failed to refresh", error);
-        navigate("/403");
-        return;
+      if (!isAuthenticated) {
+        // console.log("Redirecting to Log-in page");
+        navigate("/login", { replace: true });
       }
     };
-      
-      const returnedRole = returnRoleClaim(tokens.accessToken);
-      setRole(returnedRole);
-   
-        
-    checkAndRefresh();
-    
-  }, [ tokens.accessToken ]);
-  
 
+    checkAuth();
+  }, [ navigate ]);
 
   useEffect(() => {
-    if (role && role !== "admin") {
-      navigate("/403");
-    }
-  }, [role]);
+    if (authToken) {
+      const returnedRole = getRole(tokens.accessToken);
+      setRole(returnedRole);
+      // console.log("User role set to:", returnedRole);
+        
+      }
+    
+  }, [authToken, tokens.accessToken]);
   
- 
+  
+  useEffect(() => {
+    if (role) {
+      const isAllowedPath = allUserAllowedPaths.includes(location.pathname);
+      if (role !== "admin" && !isAllowedPath) {
+        navigate("/403");
+        
+      }
+    }
+  }, [ role, location.pathname]);
+  
+  if (!authToken || role === null) return null;
+
   return children;
 };
+
+  
+  
+ 
 
   
 

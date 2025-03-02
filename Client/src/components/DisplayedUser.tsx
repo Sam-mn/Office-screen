@@ -5,8 +5,8 @@ const DisplayedUser = ({
   // id,
   name,
   UserStatus,
-  // endDate,
-  // startDate,
+  //  endDate,
+  //  startDate,
 }: IUsers) => {
   const [bgColor, setBgColor] = useState<string>("");
   const [statusText, setStatusText] = useState<string>("");

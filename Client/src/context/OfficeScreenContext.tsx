@@ -28,7 +28,7 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
     const checkTokens = async(): Promise<boolean> => {
         const tokenIsExpired: boolean = checkTokenExpiration(tokens!.accessToken);
         if (tokenIsExpired) {
-            console.log("Refreshing token, old refreshToken: " + tokens.refreshToken);
+            // console.log("Refreshing token, old refreshToken: " + tokens.refreshToken);
             const refreshedTokens = await refreshTokens(tokens!);
             if (refreshedTokens.expired) {
                 //console.log("Refresh token may have expired, if you have any issues, please log in again.");
@@ -36,7 +36,7 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
             }
             else {
                 setTokens(refreshedTokens.newTokens);
-                console.log("Refreshing token, new refreshtoken: " + refreshedTokens.newTokens.refreshToken);
+                // console.log("Refreshing token, new refreshtoken: " + refreshedTokens.newTokens.refreshToken);
             }
         }
         return true;
@@ -82,13 +82,15 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
     }
     
     const context: IOfficeScreenContext = {
-        tokens,
-        setTokens,
+        checkTokens,
         clearTokens,
-        getForwardPage,
         fetchDefaultStatuses,
+        fetchUsers,
+        getForwardPage,
+        getRole,
+        tokens,
         sendStatusUpdate,
-        fetchUsers
+        setTokens
     };
 
     return (

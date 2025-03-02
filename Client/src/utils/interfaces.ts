@@ -61,13 +61,15 @@ export interface UserRegistrationData {
 }
 
 export interface IOfficeScreenContext {
-  tokens: ITokens;
-  setTokens: (tokens: ITokens) => void;
+  checkTokens (): Promise<boolean>;
   clearTokens: () => void;
-  getForwardPage: () => string;
   fetchDefaultStatuses: () => Promise<string[]>;
-  sendStatusUpdate: (statusUpdate: IStatusUpdate) => void;
   fetchUsers: () => Promise<IFetchedUser[]>;
+  getForwardPage: () => string;
+  getRole: (accessToken: string) => string;
+  tokens: ITokens;
+  sendStatusUpdate: (statusUpdate: IStatusUpdate) => void;
+  setTokens: (tokens: ITokens) => void;
 }
 
 export interface ITokenObjectExtensions extends JwtPayload {

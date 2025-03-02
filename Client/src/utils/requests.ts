@@ -139,37 +139,89 @@ export async function fetchWithToken<T>(
 }
 
 /// refresh Token
+// export async function refreshTokens({
+//   accessToken,
+//   refreshToken,
+// }: ITokens): Promise<ITokenRefresh> {
+//   const url: string = `${BASE_URL}/auth/refresh`;
+
+//   const response: Response = await fetch(url, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       accessToken,
+//       refreshToken,
+//     }),
+//   });
+
+//   if (!response.ok) {
+//     return {
+//       newTokens: DEFAULT_TOKENS,
+//       expired: true,
+//     };
+//   }
+
+//   const tokens = (await response.json()) as ITokens;
+//   return {
+//     newTokens: tokens,
+//     expired: false,
+//   };
+// }
+let refreshInProgress: Promise<ITokenRefresh> | null = null;
+
 export async function refreshTokens({
   accessToken,
   refreshToken,
 }: ITokens): Promise<ITokenRefresh> {
-  const url: string = `${BASE_URL}/auth/refresh`;
-
-  const response: Response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      accessToken,
-      refreshToken,
-    }),
-  });
-
-  if (!response.ok) {
-    return {
-      newTokens: DEFAULT_TOKENS,
-      expired: true,
-    };
+  // If a refresh request is already in progress, return the same Promise to avoid duplicate requests
+  if (refreshInProgress) {
+    return refreshInProgress;
   }
 
-  const tokens = (await response.json()) as ITokens;
-  return {
-    newTokens: tokens,
-    expired: false,
-  };
-}
+  // Create a new Promise and store it to ensure only one refresh happens at a time
+  refreshInProgress = (async () => {
+    const url: string = `${BASE_URL}/auth/refresh`;
 
+    try {
+      const response: Response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          accessToken,
+          refreshToken,
+        }),
+      });
+
+      if (!response.ok) {
+        return {
+          newTokens: DEFAULT_TOKENS,
+          expired: true,
+        };
+      }
+
+      const tokens = (await response.json()) as ITokens;
+      return {
+        newTokens: tokens,
+        expired: false,
+      };
+    } catch (error) {
+      console.error("Error refreshing tokens:", error);
+      return {
+        newTokens: DEFAULT_TOKENS,
+        expired: true,
+      };
+    } finally {
+      // Clear the lock once the request completes
+      refreshInProgress = null;
+    }
+  })();
+
+  return refreshInProgress;
+};
 
 
 /// Helper functions ///
