@@ -24,3 +24,10 @@
   background-color: #323232;
   color: #fff;
 }
+
+.logout-button {
+  position: absolute;
+  left: 1.5rem;
+  bottom: 1rem;
+  cursor: pointer;
+}

@@ -1,9 +1,24 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "../css/AdminPage.css";
-import { AddEditStatus, AddWebComicPage, NotesPage, UserRegistration } from "./index";
+import {
+  AddEditStatus,
+  AddWebComicPage,
+  NotesPage,
+  UserRegistration,
+} from "./index";
+import { MdOutlineLogout } from "react-icons/md";
+import { OfficeScreenContext } from "../context/OfficeScreenContext";
+import { useNavigate } from "react-router-dom";
 
 const AdminPage = () => {
   const [activeComponent, setActiveComponent] = useState<number>(1);
+  const context = useContext(OfficeScreenContext);
+  const navigate = useNavigate();
+
+  const logout = () => {
+    context.clearTokens();
+    navigate("/login");
+  };
 
   return (
     <div className="admin-container">
@@ -51,6 +66,7 @@ const AdminPage = () => {
         {activeComponent === 3 && <NotesPage />}
         {activeComponent === 4 && <UserRegistration />}
       </div>
+      <MdOutlineLogout size={30} className="logout-button" onClick={logout} />
     </div>
   );
 };

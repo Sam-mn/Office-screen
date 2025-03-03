@@ -28,6 +28,8 @@ const DisplayedUser = ({
       UserStatus === null
     ) {
       setStatusText(name);
+    } else {
+      setBgColor("#ffeb3b");
     }
     console.log("Startdate " + startDate);
     console.log("Enddate " + endDate);
