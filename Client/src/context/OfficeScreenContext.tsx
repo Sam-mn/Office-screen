@@ -103,7 +103,7 @@ export function OfficeScreenContextProvider({ children }: IContextProviderProps)
 const getRole = (accessToken: string): string => {
   const decodedToken = jwtDecode<ITokenObjectExtensions>(accessToken);
   const role = decodedToken[TOKEN_ROLE_IDENTIFIER] as string | undefined;
-  return role?.toLowerCase() || "unkown";
+  return role?.toLowerCase() || "unknown";
 };
 
 
