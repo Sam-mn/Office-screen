@@ -106,11 +106,26 @@ export interface MenuItem {
   tags: string[];
 }
 
-export interface DayMenu {
-  MenuItems: MenuItem[];
-}
-
 export interface DailyMenuResponse {
   dayMenu: string;
   day: string;
+}
+
+export interface DailyMenu {
+  dayMenu: MenuItem[];
+  day: string;
+}
+
+export interface IAllComic {
+  id: number;
+  title: string;
+  imageUrl: string;
+}
+
+export interface IAllComicPagedResult<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
 }

@@ -6,7 +6,8 @@ import {
   IImportantNote,
   IUsers,
   getLunchMenuReq,
-  DailyMenuResponse,
+  MenuItem,
+  DailyMenu,
 } from "../utils";
 import DisplayedUser from "../components/DisplayedUser";
 import { IComicLocalStorage } from "../utils";
@@ -25,7 +26,7 @@ const DisplayScreen = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [comicData, setComicData, clearComicData] =
     useLocalStorage<IComicLocalStorage | null>("ComicData", null);
-  const [lunchMenu, setLunchMenu] = useState<DailyMenuResponse | null>(null);
+  const [lunchMenu, setLunchMenu] = useState<DailyMenu | null>(null);
 
   const getImportantNotes = async () => {
     const notesData = await getImportantNotesReq();
@@ -36,24 +37,6 @@ const DisplayScreen = () => {
   useEffect(() => {
     getImportantNotes();
   }, []);
-
-  const getComic = async () => {
-    if (comicData) {
-      setComicDetails(comicData);
-      return;
-    } else {
-      const response = await getComicReq();
-      setComicDetails({
-        ...response,
-        url: `https://localhost:7078/static/images/${response.source}/${response.imageName}`,
-      });
-
-      setComicData({
-        ...response,
-        url: `https://localhost:7078/static/images/${response.source}/${response.imageName}`,
-      });
-    }
-  };
 
   useEffect(() => {
     getComic();
@@ -103,13 +86,58 @@ const DisplayScreen = () => {
     updateUsers();
   }, []);
 
+  useEffect(() => {
+    const scheduleRequest = () => {
+      const now = new Date();
+      const targetTime = new Date();
+
+      targetTime.setHours(7, 30, 0, 0);
+
+      if (now > targetTime) {
+        targetTime.setDate(targetTime.getDate() + 1);
+      }
+
+      const timeUntilTarget = targetTime.getTime() - now.getTime();
+
+      setTimeout(() => {
+        getMenu();
+        setInterval(getMenu, 24 * 60 * 60 * 1000);
+      }, timeUntilTarget);
+    };
+
+    scheduleRequest();
+  }, []);
+
+  const getComic = async () => {
+    if (comicData) {
+      setComicDetails(comicData);
+      return;
+    } else {
+      const response = await getComicReq();
+      setComicDetails({
+        ...response,
+        url: `https://localhost:7078/static/images/${response.source}/${response.imageName}`,
+      });
+
+      setComicData({
+        ...response,
+        url: `https://localhost:7078/static/images/${response.source}/${response.imageName}`,
+      });
+    }
+  };
+
   const getMenu = async () => {
-    const response = await getLunchMenuReq();
-    setLunchMenu(response);
+    try {
+      const response = await getLunchMenuReq();
+      setLunchMenu(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const updateUsers = () => {
     context.fetchUsers().then((u) => {
+      // eslint-disable-next-line prefer-const
       let userInfo: IUsers[] = [];
       let idCount = 0;
       u.forEach((user) => {
@@ -156,6 +184,29 @@ const DisplayScreen = () => {
     ]);
   };
 
+  const parseDay = (day: string) => {
+    let dayInSwedish = "Måndag";
+
+    switch (day.toLowerCase()) {
+      case "monday":
+        dayInSwedish = "Måndag";
+        break;
+      case "tuesday":
+        dayInSwedish = "Tisdag";
+        break;
+      case "wednesday":
+        dayInSwedish = "Onsdag";
+        break;
+      case "thursday":
+        dayInSwedish = "Torsdag";
+        break;
+      case "friday":
+        dayInSwedish = "fredag";
+        break;
+    }
+    return dayInSwedish;
+  };
+
   return (
     <div className="display-screen">
       <div className="users-container">
@@ -181,20 +232,24 @@ const DisplayScreen = () => {
         <div className="MenuDiv">
           {
             <>
-              <h2>{lunchMenu?.day}'s Lunch menu</h2>
+              {lunchMenu?.day && (
+                <h2>{parseDay(lunchMenu?.day)}'s Lunch menu</h2>
+              )}
               <ul className="menu-list">
-                {lunchMenu?.dayMenu.MenuItems.map((item, index) => (
-                  <li className="menu-item" key={index}>
-                    <h3 className="item-name">{item.name}</h3>
-                    <p className="item-description">{item.description}</p>
-                    <p className="item-price">{item.price}</p>
-                    <ul className="item-tags">
-                      {item.tags.map((tag, index2) => (
-                        <li key={index2}>{tag}</li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
+                {lunchMenu?.dayMenu.MenuItems.map(
+                  (item: MenuItem, index: number) => (
+                    <li className="menu-item" key={index}>
+                      <h3 className="item-name">{item.name}</h3>
+                      <p className="item-description">{item.description}</p>
+                      <p className="item-price">{item.price}</p>
+                      <ul className="item-tags">
+                        {item.tags.map((tag: string, index2: number) => (
+                          <li key={index2}>{tag}</li>
+                        ))}
+                      </ul>
+                    </li>
+                  )
+                )}
               </ul>
             </>
           }

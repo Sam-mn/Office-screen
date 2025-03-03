@@ -12,6 +12,9 @@ import {
   UserRegistrationData,
   IComic,
   DailyMenuResponse,
+  IAllComic,
+  IAllComicPagedResult,
+  DailyMenu,
 } from ".";
 import axios from "axios";
 
@@ -316,7 +319,7 @@ export const getImportantNotesReq = async (): Promise<IImportantNote[]> => {
   }
 };
 
-export const getLunchMenuReq = async (): Promise<DailyMenuResponse> => {
+export const getLunchMenuReq = async (): Promise<DailyMenu> => {
   try {
     const response = await axios.get<DailyMenuResponse>(
       `${BASE_URL}/lunchMenus`
@@ -325,6 +328,21 @@ export const getLunchMenuReq = async (): Promise<DailyMenuResponse> => {
       dayMenu: JSON.parse(response.data.dayMenu),
       day: response.data.day,
     };
+  } catch (error) {
+    console.error("Error fetching note:", error);
+    throw error;
+  }
+};
+
+export const getAllComics = async (
+  page: number,
+  pageSize: number
+): Promise<IAllComicPagedResult<IAllComic>> => {
+  try {
+    const response = await axios.get<IAllComicPagedResult<IAllComic>>(
+      `${BASE_URL}/Webcomics?page=${page}&pageSize=${pageSize}`
+    );
+    return response.data;
   } catch (error) {
     console.error("Error fetching note:", error);
     throw error;

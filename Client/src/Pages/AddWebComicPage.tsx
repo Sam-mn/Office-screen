@@ -6,6 +6,7 @@ import ShowLastWebComic from "../components/ShowLastWebComic";
 import AddWebComicByUrl from "../components/AddWebComicByUrl";
 import { useLocalStorage } from "usehooks-ts";
 import { IComicLocalStorage } from "../utils";
+import AllComics from "../components/AllComics";
 
 const AddWebComicPage = () => {
   const [activeComponent, setActiveComponent] = useState<number>(1);
@@ -24,7 +25,7 @@ const AddWebComicPage = () => {
             color: activeComponent === 2 ? "#fff" : undefined,
           }}
         >
-          Show random webcomic
+          Random comic
         </button>
         <button
           onClick={() => setActiveComponent(2)}
@@ -33,7 +34,7 @@ const AddWebComicPage = () => {
             color: activeComponent === 2 ? "#fff" : undefined,
           }}
         >
-          Upload webcomic
+          Upload comic
         </button>
         <button
           onClick={() => setActiveComponent(3)}
@@ -42,7 +43,7 @@ const AddWebComicPage = () => {
             color: activeComponent === 2 ? "#fff" : undefined,
           }}
         >
-          Show last webcomic{" "}
+          Last comic{" "}
         </button>
         <button
           onClick={() => setActiveComponent(4)}
@@ -51,12 +52,21 @@ const AddWebComicPage = () => {
             color: activeComponent === 2 ? "#fff" : undefined,
           }}
         >
-          Add webcomic url
+          Add comic url
+        </button>
+        <button
+          onClick={() => setActiveComponent(5)}
+          style={{
+            backgroundColor: activeComponent === 5 ? "#323232" : undefined,
+            color: activeComponent === 2 ? "#fff" : undefined,
+          }}
+        >
+          All comics
         </button>
       </div>
       <div className="webcomic-content">
         <div className="prev-webcomic">
-          <h2>Previous webcomic</h2>
+          <h2>Previous comic</h2>
           {comicData?.url && (
             <>
               <img src={comicData?.url} />
@@ -64,10 +74,12 @@ const AddWebComicPage = () => {
             </>
           )}
         </div>
+
         {activeComponent === 1 && <ShowRandomWebComic />}
         {activeComponent === 2 && <UploadWebcomic />}
         {activeComponent === 3 && <ShowLastWebComic />}
         {activeComponent === 4 && <AddWebComicByUrl />}
+        {activeComponent === 5 && <AllComics />}
       </div>
     </div>
   );
