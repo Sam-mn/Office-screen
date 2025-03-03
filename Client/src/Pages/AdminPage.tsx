@@ -1,9 +1,6 @@
 import { useState } from "react";
 import "../css/AdminPage.css";
-import AddEditStatus from "./AddEditStatus";
-import NotesPage from "./NotesPage";
-import AddWebComicPage from "./AddWebComicPage";
-import UserRegistration from "./UserRegistration";
+import { AddEditStatus, AddWebComicPage, NotesPage, UserRegistration } from "./index";
 
 const AdminPage = () => {
   const [activeComponent, setActiveComponent] = useState<number>(1);

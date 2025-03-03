@@ -1,5 +1,6 @@
 import { JwtPayload } from "jwt-decode";
 
+
 export interface ITokens {
   accessToken: string;
   refreshToken: string;
@@ -61,17 +62,21 @@ export interface UserRegistrationData {
 }
 
 export interface IOfficeScreenContext {
-  tokens: ITokens;
-  setTokens: (tokens: ITokens) => void;
+  checkTokens (): Promise<boolean>;
   clearTokens: () => void;
-  getForwardPage: () => string;
   fetchDefaultStatuses: () => Promise<string[]>;
-  sendStatusUpdate: (statusUpdate: IStatusUpdate) => void;
   fetchUsers: () => Promise<IFetchedUser[]>;
+  getForwardPage: () => string;
+  getRole: (accessToken: string) => string;
+  tokens: ITokens;
+  sendStatusUpdate: (statusUpdate: IStatusUpdate) => void;
+  setTokens: (tokens: ITokens) => void;
 }
 
 export interface ITokenObjectExtensions extends JwtPayload {
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string;
+  [ key: string ]: unknown;
+ 
 }
 
 export interface IFolder {

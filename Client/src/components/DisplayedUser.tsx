@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IUsers } from "../utils";
 
 const DisplayedUser = ({
-  id,
+  // id,
   name,
   UserStatus,
-  endDate,
-  startDate,
+  //  endDate,
+  //  startDate,
 }: IUsers) => {
   const [bgColor, setBgColor] = useState<string>("");
   const [statusText, setStatusText] = useState<string>("");
