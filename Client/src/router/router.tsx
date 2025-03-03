@@ -19,11 +19,11 @@ export const router = createBrowserRouter(
     <>
       
       {/* Public routes */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/403" element={<Forbidden />} />
+      <Route path="/login" element={<LoginPage />}/>
+      <Route path="/403" element={<Forbidden />}/>
+      <Route path="/" element={<DisplayScreen/>} />
 
       {/* Protected routes */}
-      <Route path="/" element={<ResourceAuth children={<DisplayScreen/>} />} />
       <Route path="/admin" element={<ResourceAuth children={<AdminPage />} />}/>
       <Route path="/status" element={<ResourceAuth children={<AddEditStatus />} />} />
     </>
