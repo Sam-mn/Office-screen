@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { IUsers } from "../utils";
 
 const DisplayedUser = ({
-  // id,
+  id,
   name,
   UserStatus,
-  //  endDate,
-  //  startDate,
+  endDate,
+  startDate,
 }: IUsers) => {
   const [bgColor, setBgColor] = useState<string>("");
   const [statusText, setStatusText] = useState<string>("");
@@ -22,11 +22,15 @@ const DisplayedUser = ({
       setBgColor("#FF5722");
     } else if (UserStatus === "Away") {
       setBgColor("#5d9eff");
-    } else if (UserStatus === "" || UserStatus === undefined || UserStatus === null) {
+    } else if (
+      UserStatus === "" ||
+      UserStatus === undefined ||
+      UserStatus === null
+    ) {
       setStatusText(name);
     }
-    console.log("Startdate " + startDate)
-    console.log("Enddate " + endDate)
+    console.log("Startdate " + startDate);
+    console.log("Enddate " + endDate);
 
     let newTimeText: string = "";
     if (startDate !== "" && startDate !== undefined && startDate !== null) {
@@ -34,7 +38,7 @@ const DisplayedUser = ({
     }
     if (endDate !== "" && endDate !== undefined && endDate !== null) {
       if (newTimeText !== "") {
-        newTimeText += "   ...   "
+        newTimeText += "   ...   ";
       }
       newTimeText += "To: " + endDate;
     }
@@ -43,12 +47,8 @@ const DisplayedUser = ({
 
   return (
     <div style={{ backgroundColor: bgColor }}>
-      <h3>
-        {statusText}
-      </h3>
-      <p>
-        {timeText}
-      </p>
+      <h3>{statusText}</h3>
+      <p>{timeText}</p>
     </div>
   );
 };

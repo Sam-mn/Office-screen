@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getRandomComicReq, IComic } from "../utils";
 import { IComicLocalStorage } from "../utils";
 import { useLocalStorage } from "usehooks-ts";
-
+import "../css/RandomComic.css";
 const ShowRandomWebComic = () => {
   const [comicDetails, setComicDetails] = useState<IComic | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -46,15 +46,24 @@ const ShowRandomWebComic = () => {
   };
 
   return (
-    <div className="webcomic-form">
-      {!comicDetails?.url || (!comicDetails?.filePath && <p>Loading...</p>)}
+    <div className="mainDiv-random">
+      <button
+        onClick={getComic}
+        className="get-random-button"
+        disabled={comicDetails == null}
+      >
+        Get new comic
+      </button>
+      <div className="webcomic-form">
+        {!comicDetails?.url || (!comicDetails?.filePath && <p>Loading...</p>)}
 
-      {comicDetails?.url && <img src={comicDetails.url} />}
-      {comicDetails?.filePath && <img src={comicDetails.filePath} />}
-      <p>{comicDetails?.text}</p>
-      {(comicDetails?.url || comicDetails?.filePath) && (
-        <button onClick={handleAddComic}>Publish</button>
-      )}
+        {comicDetails?.url && <img src={comicDetails.url} />}
+        {comicDetails?.filePath && <img src={comicDetails.filePath} />}
+        <p>{comicDetails?.text}</p>
+        {(comicDetails?.url || comicDetails?.filePath) && (
+          <button onClick={handleAddComic}>Publish</button>
+        )}
+      </div>
     </div>
   );
 };

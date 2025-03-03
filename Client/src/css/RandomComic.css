@@ -1,0 +1,26 @@
+.mainDiv-random {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.get-random-button {
+  background-color: transparent;
+  border: 1px solid black;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  color: black;
+  border-radius: 0.25rem;
+}
+
+.get-random-button:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.get-random-button:disabled:hover {
+  background-color: #96aab5;
+  color: #000;
+}
