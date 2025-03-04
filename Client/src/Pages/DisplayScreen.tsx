@@ -153,6 +153,7 @@ const DisplayScreen = () => {
       if (userInfo.length < 1) {
         defaultUsers();
       } else {
+        defaultUsers();
         setUsers(userInfo);
       }
     });
@@ -233,7 +234,7 @@ const DisplayScreen = () => {
           {
             <>
               {lunchMenu?.day && (
-                <h2>{parseDay(lunchMenu?.day)}'s Lunch menu</h2>
+                <h2>{parseDay(lunchMenu?.day)}s Lunch menu</h2>
               )}
               <ul className="menu-list">
                 {lunchMenu?.dayMenu.MenuItems.map(
