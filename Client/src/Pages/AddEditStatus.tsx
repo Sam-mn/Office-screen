@@ -18,9 +18,11 @@ const AddEditStatus = () => {
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [selectMessage, setSelectMessage] = useState<string>("");
   const [validSubmit, setValidSubmit] = useState<boolean>(false);
+  const [statusUpdated, setStatusUpdated] = useState<boolean>(false);
   const context = useContext(OfficeScreenContext);
 
   useEffect(() => {
+    setStatusUpdated(false);
     if (defaultStatuses.length < 1) {
       context.fetchDefaultStatuses().then((s) => {
         setDefaultStatuses(s);
@@ -63,6 +65,7 @@ const AddEditStatus = () => {
       StartTime: startTime,
       EndTime: endTime,
     };
+    setStatusUpdated(true);
 
     const socket = new WebSocket("https://localhost:7078/ws/userStatus");
     socket.onopen = () => {
@@ -149,6 +152,7 @@ const AddEditStatus = () => {
           Add
         </button>
       </form>
+      {statusUpdated && <p>Status updated</p>}
     </div>
   );
 };
