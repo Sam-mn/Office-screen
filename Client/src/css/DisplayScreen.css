@@ -115,6 +115,11 @@
   margin-bottom: 10px;
   background-color: #fff;
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  section {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+  }
 }
 
 .item-name {

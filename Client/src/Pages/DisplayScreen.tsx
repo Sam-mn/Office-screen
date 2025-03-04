@@ -239,9 +239,11 @@ const DisplayScreen = () => {
                 {lunchMenu?.dayMenu.MenuItems.map(
                   (item: MenuItem, index: number) => (
                     <li className="menu-item" key={index}>
-                      <h3 className="item-name">{item.name}</h3>
+                      <section>
+                        <h3 className="item-name">{item.name}</h3>
+                        <p className="item-price">{item.price}kr</p>
+                      </section>
                       <p className="item-description">{item.description}</p>
-                      <p className="item-price">{item.price}</p>
                       <ul className="item-tags">
                         {item.tags.map((tag: string, index2: number) => (
                           <li key={index2}>{tag}</li>
